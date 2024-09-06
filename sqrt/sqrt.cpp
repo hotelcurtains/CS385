@@ -10,6 +10,7 @@
 /* https://github.com/hspahic-cs/Stevens-IT/blob/3e11c00d56837fa4774b66849e91a63dbb5e9e34/CS385-TA%20-%20Algorithms/Algorithms/sqrt/sqrt.cpp */
 #include <iomanip>
 #include <limits>
+#include <sstream>
 #include <iostream>
 using namespace std;
 
@@ -30,13 +31,35 @@ double sqrt(double num, double epsilon = 0.0000001){
     }
 }
 
-int main(void){
-    double num;
-    double epsilon;
+int main(int argc, char* argv[]){
+    istringstream iss;
+    double num, epsilon;
 
-    cin >> num >> epsilon;
+    if(argc < 2 || 3 < argc){
+        cerr << "Usage: " << argv[0] << " <value> [epsilon]" << endl;
+        return 1;
+    }
 
-    cout << fixed << setprecision(8) << sqrt(num, epsilon) << endl;
+    iss.clear();
+    iss.str(argv[1]);
+    if (!(iss >> num)){
+        cerr << "Error: Value argument must be a double." << endl;
+        return 1;
+    }
+
+    iss.clear();
+    if(argc == 3){
+        iss.str(argv[2]); 
+        if (!(iss >> epsilon) || epsilon <= 0){
+            cerr << "Error: Epsilon argument must be a positive double." << endl;
+            return 1;
+        }
+        cout << fixed << setprecision(8) << sqrt(num, epsilon) << endl;
+    } else{
+        cout << fixed << setprecision(8) << sqrt(num) << endl;
+    }
+
+    return 0;
     
 }
 
