@@ -150,3 +150,69 @@ and now we will see the thing we want to see:
 ubuntu@ubuntu:~/Documents/CS385/maxtwo$ ./maxtwo 23 57
 max(57, 57) is 32762
 ```
+
+## Pointer
+a pointer stores a memory address of something 
+```c++
+int x = 5;
+int *z = &x;
+```
+- now z is pointing to x which contains 5.
+  - when declaring z the `*` is the pointer type.
+- z and x have different addresses
+- calling `&z` accesses the address of z, which the computer assigns
+- calling `z` accesses the address of **x**, which we stored in it
+- calling `*z` accesses the *value* of **x**
+  - the star here is the *dereference* operator.
+- if we try
+  ```c++
+  z+=3000;
+  ```
+  - now z points to some other memory address, 3000 addresses after x, likely random garbage. 
+  - the compiler will let you do this. do not do this.
+- if a pointer is pointing to a bad place, you will get a `Segmentation fault` or it might just keep running with garbage data
+- if you do get a segmentation fault, running `gdb ./[program]` then `run` tells you what line of code causes the error
+  - though it will tell you when the garbage is accessed, not when it becomes garbage
+  - will not work if you aren't getting a segmentation fault
+  - you will need to quit gdb afterward
+- when a function call happens, the variable with which it was called (say x) and the variable that is passed to it (say k) will be at different addresses.
+  - i.e. any changes that happen to k in the function will not happen to x
+  - this is *pass by value*
+  - k is destroyed at the end of the function
+  - this works the same as python, java, etc
+- what if we want to modify `x` in main from the function?
+  - we *pass by pointer* instead
+  - the function definition takes pointer `*k` so we can pass `f(x&)`
+  - now `f`'s code can effect `x` while calling it `*k`
+- we also have *pass by reference* in C++
+  - define the function with `&k` so you don't need to call the function with the address every time
+  - only uses one memory address; k is a reference to the *same* address as x
+  - only for the programmer; the compiler rewrites it as pass by pointer for the computer
+
+### Pointers with Dynamically Allocated Memory
+- you can declare `int y[10]` with 10 spaces
+  - you can call them by `y[i]`
+- but if you don't know how many spaces you need, it needs to be declared dynamically
+  ```c+++
+  cout << "x is" << x << endl;
+  int *values;
+  values = new int[x];
+  ```
+  - `values` is only pointing to the first element of the array
+    - the rest are stored sequentially after it
+  - we can still call elements like in java as `value[i]` 
+  - or we can call them like C as `*(values+i)`
+- when passing the array to a function, you can pass it like an array or like a pointer
+  - just define it in the way you want it
+  - `int array[]` → use `array[i]`
+  - `int *array` → use `*(values+i)`
+- you will need to know the length when iterating
+  - there is no `.length` and going past the end will rarely cause a segmentation fault
+- when you are done with the array memory you must delete it
+  - java and python just do it for you. c++ does not
+  - for each `new` there must be a `delete` somewhere
+  - i.e. `values = new int[x];` → `delete [] values;`
+    - usually done right before `return 0;` at the end
+  - after the `delete`, the pointer will be dangling (pointing to nothing/garbage)
+  - you can reassign `values` to point to something else if you want
+  - 

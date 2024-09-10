@@ -2,12 +2,11 @@
  * Filename: sqrt.cpp
  * Author  : Daniel Detore
  * Version : 1.0
- * Date    : September 5, 2024
- * Description: Computes the square root of a command-line argument.
+ * Date    : September 11, 2024
+ * Description: Computes the square root of a command-line argument with a controllable accuracy.
  * Pledge  : I pledge my honor that I have abided by the Stevens Honor System.
  ******************************************************************************/
 
-/* https://github.com/hspahic-cs/Stevens-IT/blob/3e11c00d56837fa4774b66849e91a63dbb5e9e34/CS385-TA%20-%20Algorithms/Algorithms/sqrt/sqrt.cpp */
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -22,7 +21,7 @@ double sqrt(double num, double epsilon = 0.0000001){
         return num;
     else {
         double next_guess = num;
-        double last_guess;
+        double last_guess = 0;
         while(abs(next_guess - last_guess) > epsilon){
 		    last_guess = next_guess;
 		    next_guess = (next_guess + num / next_guess) * 0.5;
@@ -55,7 +54,7 @@ int main(int argc, char* argv[]){
             return 1;
         }
         cout << fixed << setprecision(8) << sqrt(num, epsilon) << endl;
-    } else{
+    } else {
         cout << fixed << setprecision(8) << sqrt(num) << endl;
     }
 
