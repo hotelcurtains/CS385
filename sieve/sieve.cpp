@@ -42,26 +42,72 @@ void PrimesSieve::display_primes() const {
     // TODO: write code to display the primes in the format specified in the
     // requirements document.
 
+    cout << endl << "Number of primes found: " << num_primes_ << endl
+         << "Primes up to " << limit_  << ":" << endl;
 
 
+    const int max_prime_width = num_digits(max_prime_),
+              primes_per_row = 80 / (max_prime_width + 1);
+
+    if(primes_per_row < num_primes_) {
+        int cursor = 1;
+
+        for(int i = 2; i <= limit_; i++){
+            if (is_prime_[i] && i != max_prime_) {
+                if (cursor < primes_per_row){
+                    cout << setw(max_prime_width) << i << " ";
+                    cursor++;
+                }
+                else {
+                    cout << setw(max_prime_width) << i << endl;
+                    cursor = 1;
+                }
+            } else if (i == max_prime_) {
+                cout << setw(max_prime_width) << i << endl;
+            }
+        }
+    } else {
+        for(int i = 2; i <= limit_; i++){
+            if (is_prime_[i] && i != max_prime_) cout << i << " ";
+            else if (i == max_prime_) cout << i << endl;
+        }
+    }
+    cout << endl;
 }
 
 void PrimesSieve::sieve() {
-    // TODO: write sieve algorithm
-    // All instance variables must be initialized by the end of this method.
+    // is_prime_ is a list of integers [0, limit]
+    // limit is as far as we check
+    // we need to calculate num_primes_ and max_prime_
+    for (int i = 2; i <= limit_; i++){
+        is_prime_[i] = 1;
+    }
 
-    
+    num_primes_ = limit_ - 1;
+    for(int i = 2; i <= sqrt(limit_); i++){
+        if(is_prime_[i]){
+            for (int j = i*i; j <= limit_; j += i ){
+                if (is_prime_[j] == 1) num_primes_--;
+                is_prime_[j] = 0;
+                
+            }
+        }
+    }
 
+    max_prime_  = limit_;
+    while(is_prime_[max_prime_] != 1){
+        max_prime_--;
+    }
 }
 
 /* Returns how many digits are in an integer. */
 int PrimesSieve::num_digits(int num) {
-    int length = 1;
+    int length = 0;
     while(num > 0){
         num /= 10;
         length++;
     }
-    return 0;
+    return length;
 }
 
 int main() {
@@ -85,6 +131,11 @@ int main() {
         return 1;
     }
 
-    // TODO: write code that uses your class to produce the desired output.
+    // code that uses the PrimesSieve class to produce the desired output.
+
+    PrimesSieve sieve(limit);
+
+    sieve.display_primes();
+
     return 0;
 }

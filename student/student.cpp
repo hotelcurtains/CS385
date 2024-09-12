@@ -25,7 +25,7 @@ class Student {
         float gpa() const{
             return gpa_;
         }
-        void print_info() const {
+        void print_info() const{
             cout << full_name() << ", GPA: " << fixed << setprecision(2) << gpa_ << ", ID: " << id_ << endl;
         }
 
@@ -35,6 +35,10 @@ class Student {
         int id_;
 };
 
+/** 
+*  Takes a vector of Student objects, and returns a new vector 
+*  with all Students whose GPA is < 1.0. 
+*/
 vector<Student> find_failing_students(const vector<Student> &students) {
     vector<Student> failing_students;
     // Iterates through the students vector, appending each student whose gpa is

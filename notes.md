@@ -226,7 +226,8 @@ int *z = &x;
   - then `{ }` to because the code block is required even if it is empty
 - methods that do not modify member (instance) variables should be declared `const` after the header
   - `void print() const { ... }`
-  - similar to static methods
+  - NOT like static methods
+  - the only requirement is that they do not mutate a member
 - class definitions end with semicolons
   - `class Student { ... };`
 - local declaration to the stack: `MyPoint point1(x,y,z);`
