@@ -16,22 +16,21 @@ class Student {
         // Constructor with an initializer list
         Student(string first, string last, float gpa, int id) : first_{first}, last_{last}, gpa_{gpa}, id_{id} { }
 
-        string full_name(){
+        string full_name() const{
             return first_ + " " + last_;
         }
-        int id(){
+        int id() const{
             return id_;
         }
-        float gpa(){
+        float gpa() const{
             return gpa_;
         }
-        void print_info(){
-            cout << fixed << setprecision(3) << full_name() << ", GPA: " << gpa() << ", ID: " << id() << endl;
+        void print_info() const {
+            cout << full_name() << ", GPA: " << fixed << setprecision(2) << gpa_ << ", ID: " << id_ << endl;
         }
 
     private:
-        string first_;
-        string last_;
+        string first_, last_;
         float gpa_;
         int id_;
 };
@@ -41,8 +40,11 @@ vector<Student> find_failing_students(const vector<Student> &students) {
     // Iterates through the students vector, appending each student whose gpa is
     // less than 1.0 to the failing_students vector.
 
-
-    // TODO: this when we learn vectors. needs a for each loop. 
+    for (const auto &student : students){
+        if (student.gpa() < 1){
+            failing_students.push_back(student);
+        }
+    }
 
     return failing_students;
 }
@@ -53,7 +55,9 @@ vector<Student> find_failing_students(const vector<Student> &students) {
 void print_students(const vector<Student> &students) {
     // Iterates through the students vector, calling print_info() for each student.
     
-    // TODO: this when we learn vectors. probably also uses a for each loop.
+    for (const auto &student : students){
+        student.print_info();
+    }
 }
 
 /**
@@ -88,10 +92,19 @@ int main() {
 
     cout << endl << "Failing students:";
     
-    // TODO
+    
+
     // Print a space and the word 'None' on the same line if no students are failing.
     // Otherwise, print each failing student on a separate line.
     // if find_failing_students(students) returns an empty vector, print ' None'
 
+    vector<Student> failures = find_failing_students(students);
+    if(failures.empty()){
+        cout << " None";
+    } else{
+        cout << endl;
+        print_students(failures);
+    }
+    
     return 0;
 }

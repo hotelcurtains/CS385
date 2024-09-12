@@ -215,4 +215,67 @@ int *z = &x;
     - usually done right before `return 0;` at the end
   - after the `delete`, the pointer will be dangling (pointing to nothing/garbage)
   - you can reassign `values` to point to something else if you want
-  - 
+
+## Classes
+- declared like java
+- everything under the `public:` header is a public member/method
+  - everything under `private:` is private
+  - does not have brackets
+- constructor with initializer list lest you set everything without a bunch of code
+  - put a semicolon after constructor header then list `instance_variable{input}`
+  - then `{ }` to because the code block is required even if it is empty
+- methods that do not modify member (instance) variables should be declared `const` after the header
+  - `void print() const { ... }`
+  - similar to static methods
+- class definitions end with semicolons
+  - `class Student { ... };`
+- local declaration to the stack: `MyPoint point1(x,y,z);`
+  - this variable disappears at the end of the method
+- declaration to the heap: `MyPoint *point4 = new MyPoint(x,y,z);`
+  - similar to java except `point4` is a *pointer* to an anonymous `new MyPoint`
+  - the `new` object will stick around until it is actively deleted with `delete point4;`
+    - no square brackets because it's just an object, not an array
+    - can give it the pointer because it will delete what's at that address, but NOT the content of `point4`
+    - `point4` will now point to something that does not exist
+    - you should be cleaning up garbage as you go (as you stop using it), not waiting until the very end
+
+## Vectors
+- like an ArrayList
+- requires `#include <vector>`
+- declare like `vector<MyPoints> points;`
+- then use `points.push_back(point1);` to put objects in it
+- can access elements like `points[1]`
+- we also have `points.size()`, but it returns a `size_t` type
+  - `size_t` is effectively the type that can hold the largest possible integer
+  - it prints like a regular integer
+
+### regular for loop
+```c++
+for (size_t i = 0; i < points.size(); i++) {
+  points[i].print_coords();
+}
+```
+
+### for-each loop
+```c++
+vector<MyPoints> points;
+for (const auto &point : points){
+  ...
+}
+```
+- `point` is the loop variable
+  - it is a reference;
+  - we do this instead of copying the element from the array into the loop every time
+- `const` tells the compiler to throw an error if we try to change the elements
+- `auto` automatically gets the type of the elements in the vector
+
+### iterator loop
+```c++
+for (auto it = points.cbegin(); it != points.cend(); it++){
+  it->print_coords(); // equivalent to (*it).print_coords();
+}
+```
+- `it` is our iterator
+- we use `auto` here because the type of the iterator is ugly
+- `it++` magically makes the iterator move to the next element
+- `->` calls the method with the object the iterator points at
