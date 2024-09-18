@@ -239,6 +239,8 @@ int *z = &x;
     - can give it the pointer because it will delete what's at that address, but NOT the content of `point4`
     - `point4` will now point to something that does not exist
     - you should be cleaning up garbage as you go (as you stop using it), not waiting until the very end
+- you can use a class an an interface
+  - define the class's members and methods with no code blocks/values, then put all of the code for it in a different file
 
 ## Vectors
 - like an ArrayList
@@ -280,3 +282,58 @@ for (auto it = points.cbegin(); it != points.cend(); it++){
 - we use `auto` here because the type of the iterator is ugly
 - `it++` magically makes the iterator move to the next element
 - `->` calls the method with the object the iterator points at
+
+# Algorithms
+- an algorithm is a sequence of unambiguous instructions for solving a problem
+- its inputs must be specified carefully
+- the same algorithm can be implemented different ways
+- multiple algorithms might solve the same problem
+![how we make an algorithm](image.png)
+- sieve - taking a list an removing items that do not fit some criteria
+- sum of integers `[1,n]` = n(n+1)/2
+
+# Big Notations / Rates of Growth
+- every function is its own upper bound and lower bound
+- you can remove any lower-degree term from the final notation
+  - i.e. O(5n² + n) → (n²)
+- 
+
+## Big O
+- O(1) is the best possible rate, as ther is nothing lower
+- O is the asymptotic upper bound of the function
+  - i.e. when n is infinitely large
+- any line "under" O(n) is technically part of it
+  - e.g. 10n +5 is in O(n²)
+
+## Big Omega
+- Ω() is the asymptotic lower bound
+- anything above Ω() is part of it
+  - e.g. n³ is in Ω(n²)
+
+## Big Theta
+- Θ(n) includes both O(n) and Ω(n)
+
+## Theorem
+![alt text](image-1.png) for Ω use min()
+
+### Limit Rule
+![alt text](image-2.png)
+- we will rarely find that the limit DNE
+  - still, the fact that it can happen makes this way less general than other ways
+- recall L'Hopital's rule
+  - ![L'Hopital's rule](image-3.png)
+- also consider sterling's formula
+  ![Sterling's formula](image-4.png)
+  - larger n → better approximation of n!
+
+## Problem Sizes
+let's say we have 1 hour of computation time = 3.6*10⁹ microseconds. 
+if 
+  - we have an algorithm with f(n) = log₂(n)
+    - log₂(n) = 3.6\*10⁹ ⇛ n = 2^(3.6\*10⁹) which is a lot of posisble calculations
+    - note that lg(n) == log₂(n)
+  - we have f(n) = n
+    - n = 3.6\*10⁹
+- some rules about logs and more in [this handout](/notes/Guidelines%20for%20Asymptotic%20Analysis.pdf)
+- all logs grow at the same rate no matter the base
+- 

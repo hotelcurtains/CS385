@@ -89,7 +89,6 @@ void PrimesSieve::sieve() {
             for (int j = i*i; j <= limit_; j += i ){
                 if (is_prime_[j] == 1) num_primes_--;
                 is_prime_[j] = 0;
-                
             }
         }
     }
