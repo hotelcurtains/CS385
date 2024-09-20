@@ -292,11 +292,18 @@ for (auto it = points.cbegin(); it != points.cend(); it++){
 - sieve - taking a list an removing items that do not fit some criteria
 - sum of integers `[1,n]` = n(n+1)/2
 
-# Big Notations / Rates of Growth
+# Asymptotic Notation / Rates of Growth
 - every function is its own upper bound and lower bound
 - you can remove any lower-degree term from the final notation
   - i.e. O(5n² + n) → (n²)
-- 
+  - this is now asymptotic notation
+    - the asymptote is the same even if it's off from the actual function
+- when calculating time
+  - we can call the time needed for one command c₁
+  - and overhead time for initializing loop variables and returning output c₂ both
+  - for a loop that runs n times, this makes the whole function n * c₁ + c₂
+  - we remove all this when finding asymptotic notation though
+    - we care about how it grows, not how long it actually takes
 
 ## Big O
 - O(1) is the best possible rate, as ther is nothing lower
@@ -312,11 +319,19 @@ for (auto it = points.cbegin(); it != points.cend(); it++){
 
 ## Big Theta
 - Θ(n) includes both O(n) and Ω(n)
+- gives us an *asymptotically tight bound* on running time
+- e.g. for Θ(n), there are some k₁, k₂ where k₂n > n > k₁n for large values of n
+  - ![running time bounded by two linear functions](c14a48f24cae3fd563cb3627ee2a74f56c0bcef6.png)
+  - we're not too worried about small values of n
+- the same thing applies for any other random function of n
+  - ![random running time bounded by itself scaled](2bdc25c7eda8486d05b8031c5a63535684ecb5a1.png)
+- 
+
 
 ## Theorem
 ![alt text](image-1.png) for Ω use min()
 
-### Limit Rule
+### Limit Rule for Growth Rate Comparison
 ![alt text](image-2.png)
 - we will rarely find that the limit DNE
   - still, the fact that it can happen makes this way less general than other ways
@@ -330,10 +345,33 @@ for (auto it = points.cbegin(); it != points.cend(); it++){
 let's say we have 1 hour of computation time = 3.6*10⁹ microseconds. 
 if 
   - we have an algorithm with f(n) = log₂(n)
-    - log₂(n) = 3.6\*10⁹ ⇛ n = 2^(3.6\*10⁹) which is a lot of posisble calculations
+    - log₂(n) = 3.6\*10⁹ ⇛ n = 2^(3.6\*10⁹) which is a lot of possible calculations
     - note that lg(n) == log₂(n)
   - we have f(n) = n
     - n = 3.6\*10⁹
 - some rules about logs and more in [this handout](/notes/Guidelines%20for%20Asymptotic%20Analysis.pdf)
 - all logs grow at the same rate no matter the base
-- 
+
+# Check that all characters in string are unique
+- set up an unsigned int = 0 and use it as a vector
+```
+         hgfedcba
+vector = 00000000
+```
+- now we can have a setter shift a 1 into the correct place
+  - say we read a g:
+  ```c++
+  setter = 1 << ('g' - 'a')
+  ```
+  ```
+           hgfedcba
+  setter = 01000000
+  ```
+- do a bitwise `&` between them
+  - if it = 0, we have never seen the character before
+  - if it is > 0, the character is a duplicate
+- now we must remember that we have seen this character (here 'g')
+- now we bitwise or `|` the setter and vector to remember all seen characters
+  - and put the result into vector
+  - e.g. vector = 01000000 ⇛ we've only seen 'g'
+  - vector = 11000000 ⇛ we've seen 'gh' in any order
