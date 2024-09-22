@@ -304,16 +304,17 @@ for (auto it = points.cbegin(); it != points.cend(); it++){
   - for a loop that runs n times, this makes the whole function n * c₁ + c₂
   - we remove all this when finding asymptotic notation though
     - we care about how it grows, not how long it actually takes
+- all logs get written as log n because logs with constant bases differ by a constant factor which we can ignore
 
 ## Big O
 - O(1) is the best possible rate, as ther is nothing lower
-- O is the asymptotic upper bound of the function
+- O is the *asymptotic upper bound* of the function
   - i.e. when n is infinitely large
 - any line "under" O(n) is technically part of it
-  - e.g. 10n +5 is in O(n²)
+  - e.g. 10n + 5 is in O(n²)
 
 ## Big Omega
-- Ω() is the asymptotic lower bound
+- Ω() is the *asymptotic lower bound*
 - anything above Ω() is part of it
   - e.g. n³ is in Ω(n²)
 
@@ -321,11 +322,10 @@ for (auto it = points.cbegin(); it != points.cend(); it++){
 - Θ(n) includes both O(n) and Ω(n)
 - gives us an *asymptotically tight bound* on running time
 - e.g. for Θ(n), there are some k₁, k₂ where k₂n > n > k₁n for large values of n
-  - ![running time bounded by two linear functions](c14a48f24cae3fd563cb3627ee2a74f56c0bcef6.png)
+  - ![some running time bounded by two linear functions](c14a48f24cae3fd563cb3627ee2a74f56c0bcef6.png)
   - we're not too worried about small values of n
 - the same thing applies for any other random function of n
-  - ![random running time bounded by itself scaled](2bdc25c7eda8486d05b8031c5a63535684ecb5a1.png)
-- 
+  - ![some running time bounded by some function scaled](2bdc25c7eda8486d05b8031c5a63535684ecb5a1.png)
 
 
 ## Theorem
@@ -350,7 +350,6 @@ if
   - we have f(n) = n
     - n = 3.6\*10⁹
 - some rules about logs and more in [this handout](/notes/Guidelines%20for%20Asymptotic%20Analysis.pdf)
-- all logs grow at the same rate no matter the base
 
 # Check that all characters in string are unique
 - set up an unsigned int = 0 and use it as a vector
@@ -361,7 +360,7 @@ vector = 00000000
 - now we can have a setter shift a 1 into the correct place
   - say we read a g:
   ```c++
-  setter = 1 << ('g' - 'a')
+  setter = 1 << ('g' - 'a');
   ```
   ```
            hgfedcba
