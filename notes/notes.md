@@ -374,3 +374,6 @@ vector = 00000000
   - and put the result into vector
   - e.g. vector = 01000000 ⇛ we've only seen 'g'
   - vector = 11000000 ⇛ we've seen 'gh' in any order
+
+# Recurrence Relations
+I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%20Selection%20Sort.txt)
