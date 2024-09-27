@@ -376,4 +376,78 @@ vector = 00000000
   - vector = 11000000 ⇛ we've seen 'gh' in any order
 
 # Recurrence Relations
-I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%20Selection%20Sort.txt)
+I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%20Selection%20Sort.txt).
+
+# Stair Climber Problem
+- for this section * means prepended with, + means concatenation, and i have to put bracket-heavy lines in `verbatim` formatting to not break vs code
+- there are no ways to climb up 0 stairs. lol. lmao. `get_ways(0) = [[]]`
+  - ways of climbing stairs = going up combinations of stairs 1 ≤ no. of stairs ≤ 3
+- to find amount of ways to climb one stair = get_ways(1), it's
+  - 1 prepended to each solution in get_ways(1-1) = get_ways(0) = `1 * [[]]`
+  - = `[[1]]`
+- get_ways(2)
+  - = 1 prepended to each solution of get_ways(2 - 1) = get_ways(1) + 2 prepended to each solution of get_ways(2 - 2) = get_ways(0)
+  - = `1 * [[1]] + 2 * [[]]` = `[[1,1] [2]]`
+    - ⇛ go up 1 stair then one more stair or go up 2 stairs
+- `get_ways(3) = [[1,1,1], [1,2], [2,1], [3]]`
+- generally,
+  - get_ways(n) = 
+  - 1 prepended to each solution of get_ways(n - 1) +
+  - 2 prepended to each solution of get_ways(n - 2) + 
+  - 3 prepended to each solution of get_ways(n - 3)
+- we are prepending to keep everything in first-element-ascending order
+- for this algorithm's complexity, we'll look at amount of solutions output instead of running time
+  - |get_ways(3)| = 4 = T(3)
+  - T(n) = T(n-1) + T(n-2) + T(n-3)
+    - with base cases T(0) = 1, T(1) = 1, and T(2) = 2
+    - backwards substitution will be miserable
+      - works best with only one recursive call
+  - instead of calculating exactly (will take forever) we'll approximate with best and worst cases
+    - we know it's similar to fibonacci numbers, but it grows faster with one extra recursive call
+    - T(n) for fibonacci = F(n) = ϕⁿ/√5 where ϕ = (1 + √5)/2 ≈ 1.62 (golden ratio)
+      - which grown exponentially
+      - which means our T(n) is at least exponential
+  - T(n-1), T(n-2), and T(n-3), have upper bounds of T(n-1)
+    - ⇛ T(n) ≤ 3T(n-1) ≤ 9T(n-2) ≤ ... ≤ 3ⁿT(0) = 3ⁿ
+      - recall T(0) = 1
+  - which leaves up with T(n) = 3ⁿ
+    - you an also diagram out the recursive call tree and get the same answer
+  - which also means F(n) = ϕⁿ/√5 ≤ T(n) ≤ 3ⁿ
+  - out function is also the tribonacci (sum of previous 3 numbers), whose function is ugly but T(n) ∈ Θ(1.84ⁿ), which confirms our exponential growth theory
+
+# Brute Force Algorithms
+- find the space of all possible solutions and keep trying until you find the right one
+- `struct` is a class except everything is public by default
+- a pair acts as a vector of only size 2
+  - must `#include <utility>`
+- typically has simple code but bad run times
+- in c++ you can modify how operators work with a class
+  ```c++
+  // The new operator<< automatically is a member of the ostream
+  // class (that's where the original << operator is defined)
+  // so it needs to be a "friend" of the Triple class to be able
+  // to access the private instance variables a, b, and c.
+
+  friend ostream& operator<<(ostream &os, const Triple &t) {
+  os << t.a << "^2 + " << t.b << "^2 = " << t.c << "^2";
+  return os;
+  }
+  ```
+  - adds functionality
+  - `ostream` is the type of `cout`
+    - we use a reference to cout instead of copying it because it will break print continuity
+    - we need to return os so you can continue chaining it in use
+      - e.g. `cout << triple << endl`
+  - `Triple t` is our new type whose functionality we're defining
+  - the `friend` keyword lets the `ostream` class look at parts of our `triple` class that it needs to print out our `Triple`
+    - in the end it becomes part of the `ostream` class since this is extending its functionality
+
+# Elementary Sorting
+- don't use them (bad)
+- if you use bubble sort they kill you
+- bubble sort is always Θ(n²) (best, worse, and average cases)
+- best case is the perfect input (algorithm doesn't need to do anything)
+- average case is when input is truly random
+- worst case is when the algorithm needs to do the most
+- best, worse, and average cases all have their own big O/Ω bounds
+- we measure overall run time from Ω of the best case to O of the worse case
