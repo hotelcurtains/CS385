@@ -464,4 +464,24 @@ I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%
 - takes the next-smallest value and puts it in the smallest correct position from the beginning
 - scans the sorted part to find the correct position to place the element
 - the closer the array is to sorted, the closer insertion sort gets to Θ(1)
-- 
+
+# Graphs
+- degree = amount of edges touching a vertex
+- a graph does not need to be one piece
+- in code, a graph will be represented as a adjacency list or matrix
+  - matrices are better for small or dense (amount of edges near max edges = V²) graphs, where lists take up more space
+  - lists are better for sparse graphs where matrices take up a bunch of empty spaces
+
+## Breadth-First Search BFS
+- start at source and increase distance from the source to travel the graph
+- we need a counter which we increase for each new vertex visited
+- we need an array of integers to track which vertices we've been to (initialized to all zeros)
+  - when we reach a new vertex we'll set its place in the array to the counter so we know in what order we visited it
+- a queue of vertices whose neighbors we have yet to visit
+- algorithm:
+  ![breath-first search](image-5.png)
+- using an adjacency list this takes Θ(V+E)
+  - linear search through each vertex and through its edges = Θ(V+E)
+- with an adjacency matrix it takes Θ(V²)
+  - linear search through each vertex then through all of its *possible* edges ==> Θ(V²)
+- paths made by breadth-first search are commonly drawn as rooted trees
