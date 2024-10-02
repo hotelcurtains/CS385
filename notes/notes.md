@@ -433,7 +433,7 @@ I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%
   return os;
   }
   ```
-  - adds functionality
+  - *adds* functionality
   - `ostream` is the type of `cout`
     - we use a reference to cout instead of copying it because it will break print continuity
     - we need to return os so you can continue chaining it in use
@@ -444,10 +444,24 @@ I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%
 
 # Elementary Sorting
 - don't use them (bad)
-- if you use bubble sort they kill you
-- bubble sort is always Θ(n²) (best, worse, and average cases)
 - best case is the perfect input (algorithm doesn't need to do anything)
 - average case is when input is truly random
 - worst case is when the algorithm needs to do the most
 - best, worse, and average cases all have their own big O/Ω bounds
 - we measure overall run time from Ω of the best case to O of the worse case
+
+## Bubble Sort
+- if you use bubble sort they kill you
+  - continuously "bubbles up" largest/second-largest/etc values to tne end
+- bubble sort is always Θ(n²) (best, worse, and average cases)
+  - even when we optimize it as much as possible, average, worst, and overall cases are Θ(n²)
+
+## Selection Sort
+- selection sort puts the smallest at the beginning or the biggest at the end, one at a time
+- scans the unsorted part to find the minimum element
+
+## Insertion Sort
+- takes the next-smallest value and puts it in the smallest correct position from the beginning
+- scans the sorted part to find the correct position to place the element
+- the closer the array is to sorted, the closer insertion sort gets to Θ(1)
+- 
