@@ -83,7 +83,6 @@ int main() {
     cout << "insertion sort:" << endl;
     int array3[] = {78,15,23,2,97,85};
     insertion_sort(array3,6);
-
-
+    
     return 0;
 }
