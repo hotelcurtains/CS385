@@ -1,14 +1,23 @@
+#include <cmath>
+#include <iomanip>
 #include <iostream>
-#include <chrono>
-#include <fstream>
+#include <sstream>
 using namespace std;
-using namespace std::chrono;
 
 static void swap(int array[], const int a, const int b) {
     int temp = array[a];
     array[a] = array[b];
     array[b] = temp;
 }
+
+static void print_array(int array[], const int length){
+    cout << "[ ";
+    for (int i = 0; i < length-1; i++){
+        cout << array[i] << ", ";
+    }
+    cout << array[length-1] << " ]" << endl;
+}
+
 
 void bubble_sort(int array[], const int length) {
     for(int i = 0; i < length - 1; i++) {
@@ -31,6 +40,7 @@ void bubble_sort_opt(int array[], const int length) {
             }
         }
         unsorted = s;
+        print_array(array, length);
     }
 }
 
@@ -45,6 +55,7 @@ void selection_sort(int array[], const int length) {
         if(min_j != i) {
             swap(array, i, min_j);
         }
+        print_array(array, length);
     }
 }
 
@@ -55,61 +66,24 @@ void insertion_sort(int array[], const int length) {
             array[j + 1] = array[j];
         }
         array[j + 1] = current;
+        print_array(array, length);
     }
 }
 
 int main() {
-    // Initialize the pseudo-random number generator.
-    // Using rand/srand is not good in statistical or cryptographic
-    // applications but good enough here to test sorting.
-    srand(time(0));
-    ofstream file;
-    file.open("elementarysorting.csv");
-    file << "n,BubbleSort,BubbleSortOpt,SelectionSort,InsertionSort" << endl;
-    for(int n = 0; n <= 20000; n+= 1000) {
-        file << n << ",";
-        int *src = new int[n];
-        int *copy = new int[n];
-        for(int i = 0; i < n; i++) {
-            copy[i] = src[i] = rand();
-        }
+    cout << "bubble sort optimized:" << endl;
+    int array1[] = {78,15,23,2,97,85};
+    bubble_sort_opt(array1,6);
 
-        auto start = high_resolution_clock::now();
-        bubble_sort(copy, n);
-        auto stop = high_resolution_clock::now();
-        duration<double, std::milli> duration = stop - start;
-        file << duration.count() << ",";
 
-        for(int i = 0; i< n; i++) {
-            copy[i] = src[i];
-        }
-        start = high_resolution_clock::now();
-        bubble_sort_opt(copy, n);
-        stop = high_resolution_clock::now();
-        duration = stop - start;
-        file << duration.count() << ",";
+    cout << "selection sort:" << endl;
+    int array2[] = {78,15,23,2,97,85};
+    selection_sort(array2,6);
 
-        for(int i = 0; i< n; i++) {
-            copy[i] = src[i];
-        }
-        start = high_resolution_clock::now();
-        selection_sort(copy, n);
-        stop = high_resolution_clock::now();
-        duration = stop - start;
-        file << duration.count() << ",";
+    cout << "insertion sort:" << endl;
+    int array3[] = {78,15,23,2,97,85};
+    insertion_sort(array3,6);
 
-        for(int i = 0; i< n; i++) {
-            copy[i] = src[i];
-        }
-        start = high_resolution_clock::now();
-        insertion_sort(copy, n);
-        stop = high_resolution_clock::now();
-        duration = stop - start;
-        file << duration.count() << endl;
-        
-        delete [] src;
-        delete [] copy;
-    }
-    file.close();
+
     return 0;
 }
