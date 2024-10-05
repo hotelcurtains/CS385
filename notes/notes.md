@@ -472,7 +472,7 @@ I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%
   - matrices are better for small or dense (amount of edges near max edges = V²) graphs, where lists take up more space
   - lists are better for sparse graphs where matrices take up a bunch of empty spaces
 
-## Breadth-First Search BFS
+## Breadth-First Search (BFS)
 - start at source and increase distance from the source to travel the graph
 - we need a counter which we increase for each new vertex visited
 - we need an array of integers to track which vertices we've been to (initialized to all zeros)
@@ -485,3 +485,33 @@ I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%
 - with an adjacency matrix it takes Θ(V²)
   - linear search through each vertex then through all of its *possible* edges ==> Θ(V²)
 - paths made by breadth-first search are commonly drawn as rooted trees
+
+## Depth First Search (DFS)
+![DFS algorithm](image-6.png)
+- depth-first search is used for solving mazes
+  - it uses a stack instead of a queue
+  - or we can use the function call stack as that stack instead of making one ourselves
+- move away from the source as quickly as possible, then return 
+- since it's so similar to BFS, just with a different data structure, its running times are similar
+  - Using an adjacency matrix: Θ(V²).
+  - Using an adjacency list: Θ(V + E).
+
+## Topological Sort
+- take a **directed** graph and sort them into one row where all arrows point right
+- result is typically not unique
+- if the graph has a cycle, topological sort will fail
+- Vertices with no incoming edges have no dependencies and therefore can
+be traversed first.
+### Kahn's Algorithm for Topological Sort
+- first we need:
+  - An array of integers with one element for each vertex, which we use to
+  store the current number of incoming edges each vertex has (the indegree of
+  the vertex). 
+    - This array can be initialized by setting every value in the array to zero and then traversing the adjacency list or adjacency matrix representing the graph and increasing by 1 the value in the array for every vertex which is the destination of an edge.
+  - A set S of all the vertices in the array which currently have an
+  indegree of zero. 
+    - This is the set of vertices that can be traversed first.
+    - This set can be implemented either as a queue or as a stack, it does not matter (but it might produce different results), so here we use a queue.
+    - This set can be initialized by traversing the array we just described above and putting into S all the vertices in the array that have an indegree of zero (in increasing order).
+  - An empty list L that will contain the result of the topological sort.
+- 
