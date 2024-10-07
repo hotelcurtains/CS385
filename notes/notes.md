@@ -514,4 +514,33 @@ be traversed first.
     - This set can be implemented either as a queue or as a stack, it does not matter (but it might produce different results), so here we use a queue.
     - This set can be initialized by traversing the array we just described above and putting into S all the vertices in the array that have an indegree of zero (in increasing order).
   - An empty list L that will contain the result of the topological sort.
-- 
+- using DFS to do topological sort will always contain all vertices
+- it will also work even when there is a cycle
+  - we keep track of vertices we've already looked at, so we don't get caught in the cycle
+  
+# Water Jug Puzzle
+- three jugs of water A, B, C who initially carry A, B, and C gallons of water respectively
+- A, B are empty and C is full initially
+- we pour water between A, B, C with conservation
+  - current amount of water in A, B, C = a, b, c
+  - when we do this we have to keep pouring until the destination jug is full or the source jug is empty
+- we get the size of each jug from the command line
+  - e.g. waterjug 3 5 8 . . . ⇛ we start with capacities (3, 5, 8) and initial state (0, 0, 8) = (A, B, C)
+- we also get the goal state from the command line
+  - e.g. waterjug . . . 3 5 0 means we want to end up with the jugs containing (3, 5, 0) = (a, b, c)
+- our assignment is to find the shortest path from initial to goal condition
+  - we use BFS because it gives you the shortest path
+- we have been prescribed 6 water transfers, in this order:
+  1. C → A
+  2. B → A
+  3. C → B
+  4. A → B
+  5. B → C
+  6. A → C
+  - which means each vertex has ≤6 neighbors
+- we don't need to physically create a graph, we just imply one
+- need a way to remember which vertex has been visited
+- we need to remember the parent of each vertex
+- do both: store all previous vertices in a 2d array at `array[a][b]`
+  - c = C - a - b
+  - array has A+1 rows and B+1 columns
