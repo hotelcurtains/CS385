@@ -485,6 +485,8 @@ I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%
 - with an adjacency matrix it takes Θ(V²)
   - linear search through each vertex then through all of its *possible* edges ==> Θ(V²)
 - paths made by breadth-first search are commonly drawn as rooted trees
+- nonrecursive pseudocode:
+  ![alt text](image-7.png)
 
 ## Depth First Search (DFS)
 ![DFS algorithm](image-6.png)
@@ -495,6 +497,40 @@ I have no idea how to explain this. read [his notes](Recurrence%20Relations%201%
 - since it's so similar to BFS, just with a different data structure, its running times are similar
   - Using an adjacency matrix: Θ(V²).
   - Using an adjacency list: Θ(V + E).
+- iterative python code:
+```py
+# prints all not yet visited vertices reachable from s 
+def DFS(self,s): # prints all vertices in DFS manner from a given source.
+
+    # Initially mark all vertices as not visited 
+    visited = [False for i in range(self.V)] 
+
+    # Create a stack for DFS 
+    stack = []
+
+    # Push the current source node. 
+    stack.append(s) 
+
+    while (len(stack)): 
+        # Pop a vertex from stack and print it 
+        s = stack[-1] 
+        stack.pop()
+
+        # Stack may contain same vertex twice. So 
+        # we need to print the popped item only 
+        # if it is not visited. 
+        if (not visited[s]): 
+            print(s,end=' ')
+            visited[s] = True
+
+        # Get all adjacent vertices of the popped vertex s 
+        # If a adjacent has not been visited, then push it 
+        # to the stack. 
+        for node in self.adj[s]: 
+            if (not visited[node]): 
+                stack.append(node) 
+```
+
 
 ## Topological Sort
 - take a **directed** graph and sort them into one row where all arrows point right
@@ -544,3 +580,39 @@ be traversed first.
 - do both: store all previous vertices in a 2d array at `array[a][b]`
   - c = C - a - b
   - array has A+1 rows and B+1 columns
+
+# test review
+- largest size n of a problem that can be solved in 1 minute with running time n²
+  - n^2 ≤ 60000 ms = 1 min
+  - n ≤ √60000 = 244.94, 
+  - always round down to **244 = n**
+- is 3n-4 ∈ Ω(n²)? give c, n₀ or prove false by contradiction
+  - no
+  - assume that cn² ≤ 3n-4 ≤ 3n for all n ≥ n₀
+  - cn² ≤ 3n
+  - cn ≤ 3
+  - n ≤ 3/c for all n ≥ n₀; impossible
+- solve x(n) = 2x(n-1); x(1) = 4
+  1. x(n-1) = 2x(n-2)
+     1. x(n) = 2(2x(n-2))
+  2. x(n-2) = 2x(n-3)
+     1. x(n) = 2(2(2x(n-3)))
+  3. x(n) = 2ⁱx(n-i)
+  4. base case x(1) ⇛ n-i = 1 ⇛ n = i + 1
+  5. x(n) = 2ⁿ⁻¹x(n-(n-1)) = 2ⁿ⁻¹x(1) = 2ⁿ⁻¹\*4 = 2ⁿ⁻¹\*2² = 2ⁿ⁻¹⁺² = 2ⁿ⁺¹
+- create and clean up a student object on the stack then the heap
+  ```c++
+  Student a;
+
+  Student *b = new Student();
+  delete b;
+  ```
+  - can't remove local (stack) variables manually; they disappear when the function ends
+  - need `b` to be a pointer or else we don't know its location and `delete` won't work
+- what is (15<<2)^22?
+  - 15 = 00001111
+  - 15 << 2 = 00111100
+  - 22 = 00010110
+  - (15<<2)^22 = 101010 = 42
+  - << = left shift
+  - ^ = exclusive OR = XOR
