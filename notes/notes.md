@@ -553,6 +553,8 @@ be traversed first.
 - using DFS to do topological sort will always contain all vertices
 - it will also work even when there is a cycle
   - we keep track of vertices we've already looked at, so we don't get caught in the cycle
+- pseudocode:
+  ![alt text](image-8.png)
   
 # Water Jug Puzzle
 - three jugs of water A, B, C who initially carry A, B, and C gallons of water respectively
