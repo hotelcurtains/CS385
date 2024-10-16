@@ -618,3 +618,12 @@ be traversed first.
   - (15<<2)^22 = 101010 = 42
   - << = left shift
   - ^ = exclusive OR = XOR
+
+# The Master Theorem
+- skips the 5 steps of back substitution
+- must follow the shape T(n) = aT(n/b) + f(n)
+  - i.e. only divide and conquer, not decrease and conquer (which would call T(n-b))
+- ![the Master Theorem](image-9.png)
+  - if we only know O() for f, then everything is O. same for Ω().
+- a na db must be constants, not functions of n
+- 

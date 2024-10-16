@@ -7,6 +7,8 @@
  ******************************************************************************/
 #include <iostream>
 #include <sstream>
+#include <queue>
+#include <vector>
 
 using namespace std;
 
@@ -16,19 +18,78 @@ struct State {
     string directions;
     State *parent;
     
-    State(int _a, int _b, int _c, string _directions) : 
+    // for the root with no parent node
+    State(int _a, int _b, int _c, string _directions) :
         a{_a}, b{_b}, c{_c}, directions{_directions}, parent{nullptr} { }
+
+    // for all other nodes with parent nodes
+    State(int _a, int _b, int _c, State *_parent) : 
+        a{_a}, b{_b}, c{_c}, parent{_parent}, parent{_parent} { }
     
     // String representation of state in tuple form.
     string to_string() {
         ostringstream oss;
-        oss << "(" << a << ", " << b << ", " << c << ")";
+        oss << directions << " (" << a << ", " << b << ", " << c << ")";
         return oss.str();
+    }
+
+    // lets us check aimply if the states are the same
+    bool operator== (const Struct &o) {
+        return (a == o.a && b == o.b && c == o.c);
     }
 };
 
+// returns true if vector contains a, returns false otherwise.
+bool in(State a, vector<State> vector){
+    for (const auto &state : vector){
+        if (a = state) return true;
+    }
+    return false;
+}
+
 void solve(int capacity[], int goal[]){
+
+    State win(goal[0], goal[1], goal[2], "__");
+
+    vector<State> seen;
+
+    queue<State> q;
+    q.push(State(capacity[0], capacity[1], capacity[2], "Initial state."));
+
+    while(!(q.empty())){
+        State current = q.front();
+        q.pop();
+        if (current == win){
+            cout << current << endl; //return backtracked solution
+        }
+        if (in(current, seen)){
+            continue;
+        }
+        seen.push_back(current);
+        // try the 6 ways to pour water, pushing new States to the queue
+        if(current.c != 0 && current.a != capacity[0]){ // C -> A
+            //q.push(State());
+        }
+        if(){ // B -> A
+
+        }
+        if(){ // C -> B
+
+        }
+        if(){// A -> B
+
+        }
+        if(){ // B -> C
+
+        }
+        if(){ // A -> C
+
+        }
+
+
+    }
     cout << "No solution." << endl;
+
 }
 
 
