@@ -208,7 +208,7 @@ int main(int argc, char * const argv[]) {
     // actual solving
     State final = solve(capacity, goal);
     cout << final.to_string() << endl;
-    cout << (*(final.parent)).to_string() << endl;
+    //cout << (*(final.parent)).to_string() << endl;
     /*State* parent = final.parent;
     while (parent != nullptr){
         cout << (*parent).to_string() << endl;
