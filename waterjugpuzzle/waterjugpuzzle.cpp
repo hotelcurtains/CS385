@@ -20,21 +20,27 @@ struct State {
     
     // for the root with no parent node
     State(int _a, int _b, int _c, string _directions) :
-        a{_a}, b{_b}, c{_c}, directions{_directions}, parent{nullptr} { }
+        a{_a}, b{_b}, c{_c}, directions{_directions}, parent{nullptr} {}
 
     // for all other nodes with parent nodes
     State(int _a, int _b, int _c, string _directions, State *_parent) : 
-        a{_a}, b{_b}, c{_c}, directions{_directions}, parent{_parent} { }
+        a{_a}, b{_b}, c{_c}, directions{_directions}, parent{_parent} {
+            if (directions.find("Pour 1 gallons from") != string::npos) {
+                directions.erase(13, 1);
+            }
+        }
+
     
     // String representation of state in tuple form.
     string to_string() {
         ostringstream oss;
         if (directions == "No solution."){
             oss << "No solution.";
-        }else{
+        } else{
             oss << directions << " (" << a << ", " << b << ", " << c << ")";
         }
         return oss.str();
+        
     }
 
     // lets us check aimply if the states are the same
@@ -46,119 +52,140 @@ struct State {
 // returns true if vector contains a, returns false otherwise.
 bool in(State a, vector<State> vector){
     for (const auto &state : vector){
-        if (a == state) return true;
+        if (a == (state)) return true;
     }
     return false;
 }
 
+string traceback(State* input){
+    if ((*input).parent == nullptr){
+        return (*input).to_string();
+    } else return traceback((*input).parent)+"\n"+(*input).to_string();
+}
 
-State solve(int capacity[], int goal[]){
+void solve(int capacity[], int goal[]){
 
+    State* output = new State(0, 0, 0, "No solution.");
     State win(goal[0], goal[1], goal[2], "__");
 
     vector<State> seen;
 
-    queue<State> q;
-    q.push(State(0, 0, capacity[2], "Initial state."));
-
+    queue<State*> q;
+    q.push(new State(0, 0, capacity[2], "Initial state."));
+    
     while(!(q.empty())){
-        //State* current = new State(0, 0, 0, "__");
-        //current = q.front();
-        State current = q.front();
+        
+        State* current = new State(0, 0, 0, "No solution.");
+        current = q.front();
         q.pop();
-        if (current == win){
-            return current;
+        if ((*current) == win){
+            output = current;
+            break;
         }
-        if (in(current, seen)){
+        if (in((*current), seen)){
             continue;
         }
-        seen.push_back(current);
+        seen.push_back((*current));
         // try the 6 ways to pour water, pushing new States to the queue
-        if(current.c != 0 && current.a != capacity[0]){ // C -> A
-            int empty_space = capacity[0] - current.a;
+        if((*current).c != 0 && (*current).a != capacity[0]){ // C -> A
+            int empty_space = capacity[0] - (*current).a;
             ostringstream oss;
-            oss << "Pour " << empty_space << " gallons from C to A.";
-            string direction = oss.str();
 
-            if (empty_space <= current.c){
-                //State* newstate = new State(capacity[0], current.b, current.c - empty_space, direction, &current);
-                q.push(State(capacity[0], current.b, current.c - empty_space, direction, &current));
+            if (empty_space <= (*current).c){
+                oss << "Pour " << empty_space << " gallons from C to A.";
+                string direction = oss.str();
+                q.push(new State(capacity[0], (*current).b, (*current).c - empty_space, direction, current));
             }
             else {
-                //State* newstate = new State(current.a + current.c, current.b, 0, direction, &current);
-                q.push(State(current.a + current.c, current.b, 0, direction, &current));
+                oss << "Pour " << (*current).c << " gallons from C to A.";
+                string direction = oss.str();
+                q.push(new State((*current).a + (*current).c, (*current).b, 0, direction, current));
             };
         }
-        if(current.b != 0 && current.a != capacity[0]){ // B -> A
-            int empty_space = capacity[0] - current.a;
+        if((*current).b != 0 && (*current).a != capacity[0]){ // B -> A
+            int empty_space = capacity[0] - (*current).a;
             ostringstream oss;
-            oss << "Pour " << empty_space << " gallons from B to A.";
-            string direction = oss.str();
 
-            if (empty_space <= current.b){
-                q.push(State(capacity[0], current.b - empty_space, current.c, direction, &current));
+            if (empty_space <= (*current).b){
+                oss << "Pour " << empty_space << " gallons from B to A.";
+                string direction = oss.str();
+                q.push(new State(capacity[0], (*current).b - empty_space, (*current).c, direction, current));
             }
             else {
-                q.push(State(current.a + current.b, 0, current.c, direction, &current));
+                oss << "Pour " << (*current).b << " gallons from B to A.";
+                string direction = oss.str();
+                q.push(new State((*current).a + (*current).b, 0, (*current).c, direction, current));
             };
         }
-        if(current.c != 0 && current.b != capacity[1]){ // C -> B
-            int empty_space = capacity[1] - current.b;
+        if((*current).c != 0 && (*current).b != capacity[1]){ // C -> B
+            int empty_space = capacity[1] - (*current).b;
             ostringstream oss;
-            oss << "Pour " << empty_space << " gallons from C to B.";
-            string direction = oss.str();
 
-            if (empty_space <= current.c){
-                q.push(State(current.a, capacity[1], current.c - empty_space, direction, &current));
+            if (empty_space <= (*current).c){
+                oss << "Pour " << empty_space << " gallons from C to B.";
+                string direction = oss.str();
+                q.push(new State((*current).a, capacity[1], (*current).c - empty_space, direction, current));
             }
             else {
-                q.push(State(current.a, current.b + current.c, 0, direction, &current));
+                oss << "Pour " << (*current).c << " gallons from C to B.";
+                string direction = oss.str();
+                q.push(new State((*current).a, (*current).b + (*current).c, 0, direction, current));
             };
         }
-        if(current.a != 0 && current.b != capacity[1]){// A -> B
-            int empty_space = capacity[1] - current.b;
+        if((*current).a != 0 && (*current).b != capacity[1]){// A -> B
+            int empty_space = capacity[1] - (*current).b;
             ostringstream oss;
-            oss << "Pour " << empty_space << " gallons from A to B.";
-            string direction = oss.str();
-
-            if (empty_space <= current.b){
-                q.push(State(current.a - empty_space, capacity[1], current.c, direction, &current));
+            
+            if (empty_space <= (*current).b){
+                oss << "Pour " << empty_space << " gallons from A to B.";
+                string direction = oss.str();
+                q.push(new State((*current).a - empty_space, capacity[1], (*current).c, direction, current));
             }
             else {
-                q.push(State(0, current.b + current.a, current.c, direction, &current));
+                oss << "Pour " << (*current).a << " gallons from A to B.";
+                string direction = oss.str();
+                q.push(new State(0, (*current).b + (*current).a, (*current).c, direction, current));
             };
         }
-        if(current.b != 0 && current.c != capacity[2]){ // B -> C
-            int empty_space = capacity[2] - current.c;
+        if((*current).b != 0 && (*current).c != capacity[2]){ // B -> C
+            int empty_space = capacity[2] - (*current).c;
             ostringstream oss;
-            oss << "Pour " << empty_space << " gallons from B to C.";
-            string direction = oss.str();
+            
 
-            if (empty_space <= current.b){
-                q.push(State(current.a, current.b - empty_space, capacity[2], direction, &current));
+            if (empty_space <= (*current).b){
+                oss << "Pour " << empty_space << " gallons from B to C.";
+                string direction = oss.str();
+                q.push(new State((*current).a, (*current).b - empty_space, capacity[2], direction, current));
             }
             else {
-                q.push(State(current.a , 0, current.c + current.b, direction, &current));
+                oss << "Pour " << (*current).b << " gallons from B to C.";
+                string direction = oss.str();
+                q.push(new State((*current).a , 0, (*current).c + (*current).b, direction, current));
             };
         }
-        if(current.a != 0 && current.c != capacity[2]){ // A -> C
-            int empty_space = capacity[2] - current.c;
+        if((*current).a != 0 && (*current).c != capacity[2]){ // A -> C
+            int empty_space = capacity[2] - (*current).c;
             ostringstream oss;
-            oss << "Pour " << empty_space << " gallons from A to C.";
-            string direction = oss.str();
+            
 
-            if (empty_space <= current.b){
-                q.push(State(current.a - empty_space, current.b , capacity[2], direction, &current));
+            if (empty_space <= (*current).b){
+                oss << "Pour " << empty_space << " gallons from A to C.";
+                string direction = oss.str();
+                q.push(new State((*current).a - empty_space, (*current).b , capacity[2], direction, current));
             }
             else {
-                q.push(State(0, current.b, current.c + current.a, direction, &current));
+                oss << "Pour " << (*current).a << " gallons from A to C.";
+                string direction = oss.str();
+                q.push(new State(0, (*current).b, (*current).c + (*current).a, direction, current));
             };
         }
-
-
     }
-    return State(0, 0, 0, "No solution.");
 
+    cout << traceback(output) << endl;
+
+    
+
+    return;
 }
 
 
@@ -206,14 +233,8 @@ int main(int argc, char * const argv[]) {
     }
 
     // actual solving
-    State final = solve(capacity, goal);
-    cout << final.to_string() << endl;
-    //cout << (*(final.parent)).to_string() << endl;
-    /*State* parent = final.parent;
-    while (parent != nullptr){
-        cout << (*parent).to_string() << endl;
-        parent = (*parent).parent;
-    }*/
+    solve(capacity, goal);
+
     
 
     return 0;
