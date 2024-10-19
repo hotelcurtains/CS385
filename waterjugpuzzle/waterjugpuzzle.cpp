@@ -29,6 +29,7 @@ struct State {
                 directions.erase(13, 1);
             }
         }
+    
 
     
     // String representation of state in tuple form.
@@ -49,6 +50,21 @@ struct State {
     }
 };
 
+struct Wrapper{
+    State *point;
+
+    Wrapper(int _a, int _b, int _c, string _directions){
+        point = new State(_a, _b, _c, _directions);
+    }
+
+    // for all other nodes with parent nodes
+    Wrapper(int _a, int _b, int _c, string _directions, State *_parent){
+        point = new State(_a, _b, _c, _directions, _parent);
+    }
+
+    
+};
+
 // returns true if vector contains a, returns false otherwise.
 bool in(State a, vector<State> vector){
     for (const auto &state : vector){
@@ -65,127 +81,136 @@ string traceback(State* input){
 
 void solve(int capacity[], int goal[]){
 
-    State* output = new State(0, 0, 0, "No solution.");
+    Wrapper output(0, 0, 0, "No solution.");
     State win(goal[0], goal[1], goal[2], "__");
 
     vector<State> seen;
 
-    queue<State*> q;
-    q.push(new State(0, 0, capacity[2], "Initial state."));
+    queue<Wrapper> q;
+    q.push(Wrapper(0, 0, capacity[2], "Initial state."));
     
     while(!(q.empty())){
         
-        State* current = new State(0, 0, 0, "No solution.");
+        Wrapper current(0, 0, 0, "No solution.");
         current = q.front();
         q.pop();
-        if ((*current) == win){
+        if ((*current.point) == win){
             output = current;
             break;
         }
-        if (in((*current), seen)){
+        if (in((*current.point), seen)){
             continue;
         }
-        seen.push_back((*current));
+        seen.push_back((*current.point));
         // try the 6 ways to pour water, pushing new States to the queue
-        if((*current).c != 0 && (*current).a != capacity[0]){ // C -> A
-            int empty_space = capacity[0] - (*current).a;
+        if((*current.point).c != 0 && (*current.point).a != capacity[0]){ // C -> A
+            int empty_space = capacity[0] - (*current.point).a;
             ostringstream oss;
 
-            if (empty_space <= (*current).c){
+            if (empty_space <= (*current.point).c){
                 oss << "Pour " << empty_space << " gallons from C to A.";
                 string direction = oss.str();
-                q.push(new State(capacity[0], (*current).b, (*current).c - empty_space, direction, current));
+                q.push(Wrapper(capacity[0], (*current.point).b, (*current.point).c - empty_space, direction, current.point));
             }
             else {
-                oss << "Pour " << (*current).c << " gallons from C to A.";
+                oss << "Pour " << (*current.point).c << " gallons from C to A.";
                 string direction = oss.str();
-                q.push(new State((*current).a + (*current).c, (*current).b, 0, direction, current));
+                q.push(Wrapper((*current.point).a + (*current.point).c, (*current.point).b, 0, direction, current.point));
             };
         }
-        if((*current).b != 0 && (*current).a != capacity[0]){ // B -> A
-            int empty_space = capacity[0] - (*current).a;
+        if((*current.point).b != 0 && (*current.point).a != capacity[0]){ // B -> A
+            int empty_space = capacity[0] - (*current.point).a;
             ostringstream oss;
 
-            if (empty_space <= (*current).b){
+            if (empty_space <= (*current.point).b){
                 oss << "Pour " << empty_space << " gallons from B to A.";
                 string direction = oss.str();
-                q.push(new State(capacity[0], (*current).b - empty_space, (*current).c, direction, current));
+                q.push(Wrapper(capacity[0], (*current.point).b - empty_space, (*current.point).c, direction, current.point));
             }
             else {
-                oss << "Pour " << (*current).b << " gallons from B to A.";
+                oss << "Pour " << (*current.point).b << " gallons from B to A.";
                 string direction = oss.str();
-                q.push(new State((*current).a + (*current).b, 0, (*current).c, direction, current));
+                q.push(Wrapper((*current.point).a + (*current.point).b, 0, (*current.point).c, direction, current.point));
             };
         }
-        if((*current).c != 0 && (*current).b != capacity[1]){ // C -> B
-            int empty_space = capacity[1] - (*current).b;
+        if((*current.point).c != 0 && (*current.point).b != capacity[1]){ // C -> B
+            int empty_space = capacity[1] - (*current.point).b;
             ostringstream oss;
 
-            if (empty_space <= (*current).c){
+            if (empty_space <= (*current.point).c){
                 oss << "Pour " << empty_space << " gallons from C to B.";
                 string direction = oss.str();
-                q.push(new State((*current).a, capacity[1], (*current).c - empty_space, direction, current));
+                q.push(Wrapper((*current.point).a, capacity[1], (*current.point).c - empty_space, direction, current.point));
             }
             else {
-                oss << "Pour " << (*current).c << " gallons from C to B.";
+                oss << "Pour " << (*current.point).c << " gallons from C to B.";
                 string direction = oss.str();
-                q.push(new State((*current).a, (*current).b + (*current).c, 0, direction, current));
+                q.push(Wrapper((*current.point).a, (*current.point).b + (*current.point).c, 0, direction, current.point));
             };
         }
-        if((*current).a != 0 && (*current).b != capacity[1]){// A -> B
-            int empty_space = capacity[1] - (*current).b;
+        if((*current.point).a != 0 && (*current.point).b != capacity[1]){// A -> B
+            int empty_space = capacity[1] - (*current.point).b;
             ostringstream oss;
             
-            if (empty_space <= (*current).b){
+            if (empty_space <= (*current.point).b){
                 oss << "Pour " << empty_space << " gallons from A to B.";
                 string direction = oss.str();
-                q.push(new State((*current).a - empty_space, capacity[1], (*current).c, direction, current));
+                q.push(Wrapper((*current.point).a - empty_space, capacity[1], (*current.point).c, direction, current.point));
             }
             else {
-                oss << "Pour " << (*current).a << " gallons from A to B.";
+                oss << "Pour " << (*current.point).a << " gallons from A to B.";
                 string direction = oss.str();
-                q.push(new State(0, (*current).b + (*current).a, (*current).c, direction, current));
+                q.push(Wrapper(0, (*current.point).b + (*current.point).a, (*current.point).c, direction, current.point));
             };
         }
-        if((*current).b != 0 && (*current).c != capacity[2]){ // B -> C
-            int empty_space = capacity[2] - (*current).c;
+        if((*current.point).b != 0 && (*current.point).c != capacity[2]){ // B -> C
+            int empty_space = capacity[2] - (*current.point).c;
             ostringstream oss;
             
 
-            if (empty_space <= (*current).b){
+            if (empty_space <= (*current.point).b){
                 oss << "Pour " << empty_space << " gallons from B to C.";
                 string direction = oss.str();
-                q.push(new State((*current).a, (*current).b - empty_space, capacity[2], direction, current));
+                q.push(Wrapper((*current.point).a, (*current.point).b - empty_space, capacity[2], direction, current.point));
             }
             else {
-                oss << "Pour " << (*current).b << " gallons from B to C.";
+                oss << "Pour " << (*current.point).b << " gallons from B to C.";
                 string direction = oss.str();
-                q.push(new State((*current).a , 0, (*current).c + (*current).b, direction, current));
+                q.push(Wrapper((*current.point).a , 0, (*current.point).c + (*current.point).b, direction, current.point));
             };
         }
-        if((*current).a != 0 && (*current).c != capacity[2]){ // A -> C
-            int empty_space = capacity[2] - (*current).c;
+        if((*current.point).a != 0 && (*current.point).c != capacity[2]){ // A -> C
+            int empty_space = capacity[2] - (*current.point).c;
             ostringstream oss;
             
 
-            if (empty_space <= (*current).b){
+            if (empty_space <= (*current.point).b){
                 oss << "Pour " << empty_space << " gallons from A to C.";
                 string direction = oss.str();
-                q.push(new State((*current).a - empty_space, (*current).b , capacity[2], direction, current));
+                q.push(Wrapper((*current.point).a - empty_space, (*current.point).b , capacity[2], direction, current.point));
             }
             else {
-                oss << "Pour " << (*current).a << " gallons from A to C.";
+                oss << "Pour " << (*current.point).a << " gallons from A to C.";
                 string direction = oss.str();
-                q.push(new State(0, (*current).b, (*current).c + (*current).a, direction, current));
+                q.push(Wrapper(0, (*current.point).b, (*current.point).c + (*current.point).a, direction, current.point));
             };
         }
     }
 
-    cout << traceback(output) << endl;
+    cout << traceback(output.point) << endl;
 
     
+    while(!q.empty()){
+        list.push_back(q.front());
+        q.pop();
+    }
+    for(int i = 0; i < (int)list.size(); i++){
+        delete list[i].point;
+        list[i].point = NULL;
+    }
+    list.clear();
 
-    return;
+    
 }
 
 
