@@ -1,10 +1,15 @@
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <cstdlib> // Needed for rand() and srand()
-#include <chrono>
+/*
+Author: Daniel Detore
+Combining bogosort and bubble sort to create a true evil.
+*/
+
+#include <sstream>  // for input handling
+#include <cstdlib>  // Needed for rand() and srand()
+#include <chrono>   // for function timing
+#include <ctime>    // for seeding
+#include <iostream> // for printing
 using namespace std;
+using namespace std::chrono;
 
 static void swap(int array[], const int a, const int b) {
     int temp = array[a];
@@ -13,11 +18,11 @@ static void swap(int array[], const int a, const int b) {
 }
 
 static void print_array(int array[], const int length){
-    cout << "[ ";
+    cout << "[";
     for (int i = 0; i < length-1; i++){
         cout << array[i] << ", ";
     }
-    cout << array[length-1] << " ]" << endl;
+    cout << array[length-1] << "]" << endl;
 }
 
 static bool is_sorted(int array[], const int length){
@@ -27,28 +32,51 @@ static bool is_sorted(int array[], const int length){
     return true;
 }
 
+// sort an array for a comically long time
 // input: an array and its length
 // output: print the sorted array
-void coinflipsort(int array[], const int length){
+void coinflipsort(int array[], int length){
     int swaps = 0;
-    while (!is_sorted(array), length){
-        for (int i = 0; i < length-1; i++)
-            int swap = rand() % 2;
-            swaps += swap;
-            if (swap == 1) swap(array, i, i+1);
+    while (!is_sorted(array, length)){
+        for (int i = 0; i < length-1; i++){
+            int r = rand() % 2;
+            swaps += r;
+            if (r == 1) swap(array, i, i+1);
+        }
     }
     print_array(array, length);
     cout << "Swaps: " << swaps << endl;
 }
 
 int main(int argc, char * const argv[]) {
-    int array[] = {78,15,23,2,97,85};
+    if(argc != 2){
+        cout << "Usage: " << argv[0] << " <n>" << endl;
+        return 1;
+    }
+    stringstream iss;
+    iss.clear();
+    iss.str(argv[1]);
+    int n;
+    if(!(iss >> n) or (n < 0)){
+        cout << "n must be a positive integer" << endl;
+        return 1;
+    }
+    if(n>=12) cout << "Please hold..." << endl;
+
+    srand(time(0));
+
+    int* array = new int[n];
+    for (int i = 0; i < n; i++){
+        array[i] = (int)rand();
+    }
         
     auto start = high_resolution_clock::now();
 
-    coinflipsort(array,6);
+    coinflipsort(array,n);
     
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     cout << "Time: " << duration.count() << " microseconds" << endl;
+
+    delete [] array;
 }
