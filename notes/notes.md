@@ -626,4 +626,74 @@ be traversed first.
 - ![the Master Theorem](image-9.png)
   - if we only know O() for f, then everything is O. same for Ω().
 - a na db must be constants, not functions of n
-- 
+
+# Selection Problem
+- find the kth smallest integer in an array
+- we could just sort the array but that's too slow
+- we will use quick select
+- leftmost element is pivot
+- split the array into all elements \< pivot and all elements \> pivot
+- put pivot in the middle, everything smaller on the left, and everything bigger on the right
+  - this is one partition
+- lomuto algorithm
+  - Θ(n)
+  - returns the correct position of the first element in the array
+- quickselect willkeep partitioning until s (sorted position of pivot) = k - 1
+  - in the sorted array, the kth smallest element will be at index k - 1
+  - Ω(n), O(n²)
+  - in the worst case, it's already sorted and we have to repartition for every single element ⇛ Θ(n²)
+  - in a completely random case, it's more likely to be unsorted → ≈ Θ(n)
+  - recurrence relation of T(n) = T(n/2) + Θ(n). using the master theorem it's still Θ(n)
+- pseudocode:
+
+  ```
+  // Partitions subarray by Lomuto’s algorithm using first element as pivot.
+  // Input: A subarray A[l..r] of array A[0..n−1], defined by its left and right indices l and r (l ≤ r)
+  // Output: Partition of A[l..r] and the new position s of the pivot.
+  LomutoPartition(A, l, r):
+    p ← A[l]
+    s ← l
+    for i ← l + 1 to r do
+      if A[i] < p
+        s ← s + 1
+        swap(A[s], A[i])
+    swap(A[l], A[s])
+    return s
+
+
+  // Solves the selection problem by recursive partition-based algorithm.
+  // Input: Subarray A[l..r] of array A[0..n − 1] of orderable elements and integer k (0 ≤ k ≤ n - 1)
+  // Output: The value of the kth smallest element.
+  Quickselect(A, l, r, k):
+    s ← LomutoPartition(A, l, r)
+    if s = k − 1 return A[s]
+    else if s > k − 1 Quickselect(A, l, s − 1, k)
+    else Quickselect(A, s + 1, r, k)
+  ```
+
+- to avoid the worst case, we can use the median value as the pivot
+  - unfortunately it takes Θ(n) to find the median so we're not doing that
+- we'll instead select the pivot at random
+  - random number generation is slow too...
+  - in practice, we'll use the median of 3 instead of the actual mathematical median
+  - median of 3 = median of the first, central, and last elements
+  - then we'll swap this new median of 3 pivot to the beginning and do the regular lomuto partitioning
+  - still avoids the worst case by finishing in Θ(n) if the array is already sorted
+    - not totally but basically
+- turn this into quicksort by recursively partitioning the left and right unsorted parts of the array
+  ```
+  Quicksort(A, l, r):
+    if(l < r)
+      s ← LomutoPartition(A, l, r)
+      Quicksort(A, l, s − 1)
+      Quicksort(A, s + 1, r)
+  ```
+  - becomes Θ(nlogn)
+  - best case recurrence relation T(n) = 2T(n/2) + Θ(n) ⇛ Θ(nlogn)
+  - in the average case it's the same, just approximately instead of exactly
+  - in the worst case it's still Θ(n²)
+  - median of three will make worst case way less likely but it's still possible
+- quicksort is the fastest known sorting algorithm
+  - especially bc the code is so simple and the worst case is so unlikely
+  - however smaller arrays are expensive for a lot of function calls on small arrays
+  - on small arrays we might switch to insertion sort, which is inexpensive on small arrays
