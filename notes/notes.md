@@ -697,3 +697,152 @@ be traversed first.
   - especially bc the code is so simple and the worst case is so unlikely
   - however smaller arrays are expensive for a lot of function calls on small arrays
   - on small arrays we might switch to insertion sort, which is inexpensive on small arrays
+
+
+# Radix sort
+- to sort number with larger ranges we can do multiple sorts by each digit of the numbers
+  - must use a stable sorting algorithm
+  - that way at no point do they go out of order
+  - me use a fancy version of counting sort that is stable
+  - we could sort by more digits at a time
+    - this squares the number of counter needed
+    - going from 10 to 100 to sort 2 digits at a time
+- we might use decimal bytes as counters to reduce memory space
+- requires begin able to split numbers/strings/etc into smaller bits
+  
+# Russian Peasant Multiplication
+- you don't want to use this algorithm unless you have to.
+  - most CPUs have better (long) multiplication built in
+  - this is only useful if you have a cheap as shit cpu that doesn't have multiplication built in
+- we want to multiply n, m
+- manual way:
+1. runs faster if n < m, so swap if necessary
+2. until n = 1:
+   1. divide n by 2 (i.e. right-shift by 1)
+   2. multiply m by 2 (i.e. left-shift by 1)
+3. for all values of n that are even, remove its corresponding value of m
+4. sum the remaining values of m
+- code way:
+1. swap n, m if necessary
+2. while n > 0
+   1. add m to sum if n is odd
+   2. n /= 2 ≡ n >>= 1
+   3. m *= 2 ≡ m <<= 1
+3. we calculated the sum of ms for odd ns while finding each new m so return that sum
+- which gives us:
+```c
+unsigned long russian_peasant_multiplication(unsigned int m, unsigned int n) {
+    if(n > m) {
+        swap(n, m);
+    }
+    unsigned long big_m = m, sum = 0;
+    while(n > 0) {
+        if(n & 1) { // same as: n % 2 == 1
+            sum += big_m;
+        }
+        n >>= 1;
+        big_m <<= 1;
+    }
+    return sum;
+}
+```
+- running time: Θ(lg(min(m,n)))
+
+# Binary Reflected Gray Codes
+- sometimes binary numbers don't work.
+  - e.g. to go from 1 (001) to 2 (010) you have to flip two switches as the same time
+  - you cannot do this perfectly on a physical machine
+  - there will be a moment where the switches will read out 0 (000) or 3 (011)
+- gray codes make numbers vary by only one bit
+  - 0: 000
+  - 1: 001
+  - 2: 011
+  - 3: 010
+  - 4: 110
+  - 5: 111
+  - 6: 101
+  - 7: 100
+- how do we make them?
+  - this code generates all BRGC in n bits
+    - i.e. from 0 to n-1
+```py
+def BRGC(n):
+    if n == 1:
+        return ["0", "1"]
+    L1 = BRGC(n - 1)
+    # Copy with step of -1, so reverse:
+    L2 = L1[::-1] # notice we are *reflecting* the list
+    # List comprehensions:
+    L3 = ["0" + code for code in L1] # adds 0 to the start of every element of L1
+    L4 = ["1" + code for code in L2] # adds 1 to the start of every element of L2
+    return L3 + L4 # appending L3, L4
+```
+- the "reflected" part comes from the reflection step of the code
+  - the gray part comes from inventor mr. gray
+- there is no direct conversion from binary to BRGC or vice-versa
+  - you just have to agree that 3 is 010.
+  - you generate them once and have them in a reference table
+- running time Ω(2ⁿ)
+  - recall there are 2ⁿ permutations of n binary bits
+  - it's usually worse. 
+    - the slowdown is because of the list processing
+  - T(n) = Θ(n2ⁿ)
+  - it's fine that it's slow cuz we only ever run this once
+    - plus n is usually gonna be small. single digits
+
+# Lexicographic Permute
+- fancy way of saying anagrams, but including nonwords
+- lexicographic = dictionary order
+  - the algorithm returns all permutations in lexicographic = dictionary order
+```py
+def lexpermute(s):
+    n = len(s)
+    # Convert s to a list and sort:
+    a = list(s)   # ["c", "a", "t"]
+    a.sort()      # ["a", "c", "t"]
+    result = ["".join(a)]
+    # Reverse start to get end:
+    end = a[::-1] # ["t", "c", "a"]
+    # Algorithm proper:
+    while a != end:
+        # let i be its largest index such that a_i < a_i+1
+        for i in range(n-2, -1, -1):
+            if a[i] < a[i+1]:
+                break
+        # find the largest index j such that a_i < a_j
+        for j in range(n-1, -1, -1):
+            if a[i] < a[j]:   
+            # strictly less than stops the algorithm from duplicating strings, even when the string has duplicate characters
+                break
+        # swap a_i with a_j
+        a[i], a[j] = a[j], a[i]
+        # reverse the order of the elements from a_i+1 to a_n
+        a[i+1:n] = a[n-1:i:-1]
+        # add the new permutation to the list
+        result += ["".join(a)]
+    return result
+```
+- run time Θ(n*n!)
+  - actually Θ(n*n! / (product of factorials af amount of times letters are duplicated))
+
+# Karatsuba Multiplication
+- only useful for massive numbers with hundreds of digits
+  - i.e. cryptography
+- if n is the amount of digits in the largest number being multiplied
+- regular multiplication takes n² multiplications and (n-1)² additions excluding carries
+- russian peasant multiplication takes Θ(n²) due to shifting
+- karatsuba is a divide and conquer algorithm
+- we'll multiply 2351 and 1234
+  - 2531 = 23 * 100 + 31
+  - 1234 = 12 * 100 + 34
+  - 2531 * 1234 = (23 * 200 + 51) * (12 * 100 + 34)
+  - = (23 * 12) * 10000 + ***(23 * 34 + 51 * 12)*** * 100 + (51 * 34)
+  - (23 + 51) * (12 + 34) = 23 * 12 + ***23 * 34 + 51 * 12*** + 51 * 34
+  - 2351 * 1234 = (*23 * 12*) * 10000 + ((23 + 51) * (12 + 34) - *23 * 12* - **51 * 34**) * 100 + **51 * 34**
+  - there are only 3 unique multiplications here
+- in practice people use Toom-Cook with is a version of this
+- one you get to tens of thousands of digits, use Schonhage-Strassen
+  - O(nlog(n)log(logn)), but with a  massive hidden constant
+  - or its generalization which is O(nlogn)
+  - possibly multiplication is Θ(nlogn) but nobody can prove a lower bound
+
