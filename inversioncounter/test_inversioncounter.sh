@@ -140,7 +140,7 @@ run_test_with_input() {
 }
 
 ############################################################
-# TODO - Make sure your C++ code can handle these cases.
+# Make sure your C++ code can handle these cases.
 run_test_with_args_and_input "" "x 1 2 3" "Enter sequence of integers, each followed by a space: Error: Non-integer value 'x' received at index 0."
 run_test_with_args_and_input "" "1 2 x 3" "Enter sequence of integers, each followed by a space: Error: Non-integer value 'x' received at index 2."
 run_test_with_args_and_input "lots of args" "" "Usage: ./inversioncounter [slow]"
@@ -151,6 +151,16 @@ run_test_with_args_and_input "" "  " "Enter sequence of integers, each followed 
 # TODO - write at least 10 extra solid tests that use the "slow" (nested loops) approach. Here is one example.
 # You are allowed up to 8 seconds to count inversions on up to 100,000 values.
 run_test_with_args_and_input "slow" "2 1" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 1"
+run_test_with_args_and_input "slow" "1 1 1 1" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 0"
+run_test_with_args_and_input "slow" "3 1 0 1 2 9" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 5"
+run_test_with_args_and_input "slow" "3 6 2 4 768 1 4 567 123 65 12 345 12 -100" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 40"
+run_test_with_args_and_input "slow" "$(echo {10..0} {0..10} {10..0} {0..10})" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 440"
+run_test_with_args_and_input "slow" "$(echo {10..0} {0..50} {60..40} {80..1000})" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 375"
+run_test_with_args_and_input "slow" "$(echo {500..0} {0..500})" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 250500"
+run_test_with_args_and_input "slow" "$(echo {0..5000} {5000..0})" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 25005000"
+run_test_with_args_and_input "slow" "$(echo {90000..420..2})" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 1003094445"
+run_test_with_args_and_input "slow" "$(echo {1..100000})" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 0"
+run_test_with_args_and_input "slow" "$(echo {100000..1})" "Enter sequence of integers, each followed by a space: Number of inversions (slow): 4999950000"
 
 
 # END slow tests
@@ -159,6 +169,16 @@ maxtime=1
 # TODO - write at least 10 extra solid tests that use the fast (MergeSort) approach. Here is one example.
 # You are allowed up to 1 second to count inversions on up to 100,000 values.
 run_test_with_args_and_input "" "2 1" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 1"
+run_test_with_args_and_input "" "1 1 1 1" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 0"
+run_test_with_args_and_input "" "3 1 0 1 2 9" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 5"
+run_test_with_args_and_input "" "3 6 2 4 768 1 4 567 123 65 12 345 12 -100" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 40"
+run_test_with_args_and_input "" "$(echo {10..0} {0..10} {10..0} {0..10})" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 440"
+run_test_with_args_and_input "" "$(echo {10..0} {0..50} {60..40} {80..1000})" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 375"
+run_test_with_args_and_input "" "$(echo {500..0} {0..500})" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 250500"
+run_test_with_args_and_input "" "$(echo {0..5000} {5000..0})" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 25005000"
+run_test_with_args_and_input "" "$(echo {90000..420..2})" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 1003094445"
+run_test_with_args_and_input "" "$(echo {1..100000})" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 0"
+run_test_with_args_and_input "" "$(echo {100000..1})" "Enter sequence of integers, each followed by a space: Number of inversions (fast): 4999950000"
 
 
 # END fast tests

@@ -36,15 +36,56 @@ long count_inversions_slow(int array[], int length) {
  * Counts the number of inversions in an array in Theta(n lg n) time.
  */
 long count_inversions_fast(int array[], int length) {
-    // TODO
-    // Hint: Use mergesort!
-    
+    int* scratch = new int[length];
+    long count = mergesort(array, scratch, 0, length-1);
+    delete [] scratch;
+    return count;
+}
+
+static long merge(int array[], int scratch[], int low, int mid, int high){ 
+    int i1 = low, i2 = mid, i=low;
+    long count = 0;
+    while (i1 < mid && i2 <= high){
+        if (array[i1] <= array[i2]){
+            scratch[i] = array[i1];
+            i++;
+            i1++;
+        }
+        else{
+            scratch[i] = array[i2];
+            i++;
+            i2++;
+            count += mid - i1;
+        }
+    }
+    while (i1 < mid){
+        scratch[i] = array[i1];
+        i++;
+        i1++;
+    }
+    while (i2 <= high){
+        scratch[i] = array[i2];
+        i++;
+        i2++;
+    }
+    for (int j = 0; j <= high; j++){
+        array[j] = scratch[j];
+    }
+    return count;
 }
 
 static long mergesort(int array[], int scratch[], int low, int high) {
-    // TODO
-    return 0;
+    long count = 0;
+    if (low < high){
+        int mid = low + (high-low)/2;
+        count += mergesort(array, scratch, low, mid);
+        count += mergesort(array, scratch, mid + 1, high);
+        count += merge(array, scratch, low, mid + 1, high);
+    }
+    return count;
 }
+
+
 
 int main(int argc, char *argv[]) {
     // TODO: parse command-line argument
@@ -52,7 +93,8 @@ int main(int argc, char *argv[]) {
         cout << "Usage: " << argv[0] << " [slow]" << endl;
         return 1;
     } 
-    if (strcmp(argv[1], "slow")){
+    char ok[] = "slow";
+    if (argc == 2 && strcmp(argv[1], ok) != 0){
         cout << "Error: Unrecognized option '" << argv[1] << "'." << endl;
         return 1;
     }
@@ -91,7 +133,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (values.empty()) {
-        cout << "Sequence of integers not received." << endl;
+        cout << "Error: Sequence of integers not received." << endl;
         return 1;
     }
     // TODO: produce output
@@ -100,6 +142,8 @@ int main(int argc, char *argv[]) {
 
     if(argc == 2){
         cout << "(slow): " << count_inversions_slow(&values[0], index) << endl;
+    } else{
+        cout << "(fast): " << count_inversions_fast(&values[0], index) << endl;
     }
 
     return 0;
