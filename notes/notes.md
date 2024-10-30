@@ -846,3 +846,4 @@ def lexpermute(s):
   - or its generalization which is O(nlogn)
   - possibly multiplication is Θ(nlogn) but nobody can prove a lower bound
 
+![alt text](image-10.png)
