@@ -847,3 +847,72 @@ def lexpermute(s):
   - possibly multiplication is Θ(nlogn) but nobody can prove a lower bound
 
 ![alt text](image-10.png)
+
+# Trees
+- path = sequence of edges
+- depth = amount of edges from root to a node
+- height of node = length of longest path to leaf
+- height of tree = height of the root or depth of deepest leaf
+  - = max depth
+  - root has height 0
+  - empty tree has height -1
+- size = number of nodes
+- width = amount of nodes at the same depth
+- diameter of the tree = longest path that cna be taken within the tree, ignoring directions of edges
+
+## Binary Trees
+- in binary trees, a node can have ≤ 2 children
+- maximum possible depth in n-1, where all elements are stacked in one big line
+- traversal
+  - preorder traversal: root L R
+  - inorder traversal: L root R
+    - because they're recursive you go all the way L, then the root, then one right and all the way left, etc
+  - postorder traversal: L R root
+  - ![pseudocode for traversal](image-11.png)
+  - traversal takes Θ(n)
+
+## Binary Search Trees
+- binary search tree where all values in every node's left subtree is always smaller than the node and the node is always smaller than all values in its right subtree
+- WE WILL ONLY USE TREES WITH NO DUPLICATES
+  - therefore all comparisons are strict
+- we will sort by keys (e.g. ISBN no.s)
+  - though in real life there will be other info (title, SKU, price...)
+- inserting elements in random order is more likely to give a balanced tree
+  - height of ceil(lg(n))
+- if inserted in sorted/reverse-sorted order it will be completely unbalanced
+  - recall max depth n-1
+- inorder traversal of BST gives a sorted list on its nodes
+  - not as good as quicksort since it has ot make the tree and write back into the OG array
+- recall BST (directed) search algorithm
+  - SEARCH(root, target):
+    1. if root is null, return NULL
+    2. if root is target, return root
+    3. if target < root, return SEARCH(root.left, target)
+    4. if target > root, return SEARCH(root.right, target)
+  - runs Ω(1), O(tree height)
+- find min by going left until you can't anymore, max by going right
+  - might not be a leaf. it's fine, going inward will move you away from the extrema
+  - findMin/findMax run O(tree height)
+- recall BST insertion
+- INSERT(root, x)
+  1. IF root=Null, return root=CREATE-NODE(x)
+  2. IF root=x, return Null
+  3. IF root>x, return INSERT(root.left, x)
+  4. ELSE, return INSERT(root.right, x)
+  - like searching for where x should be and inserting it in the place where it would be
+  - runs O(tree height)s
+- recall 
+  - pass-by-value, which copies the value of an argument and won't change the original, and pass-by-pointer which will change the value of the variable passed
+- to be able to change the root of a tree, you'll need to save a pointer a to pointer to its Node
+  - only if you use recursion
+- deletion is basically searching and deleting it if you find it
+  - you still need to make sure the BST property remains
+  - if target is a leaf, just delete it
+  - if target has one child, move parent's pointer to that child
+  - if target has 2 children,
+    - replace it with minimum node of right subtree, put *its* right subtree where it was
+    - or replace it with maximum node of left subtree, put *its* left subtree where it was
+    - using findMin/findMax
+  - always O(tree height)
+- having all of these operations being O(n) (since worst base BST is unbalanced and tree height = n-1 ∈ O(n)) is not fast enough. 
+
