@@ -621,7 +621,7 @@ be traversed first.
 
 # The Master Theorem
 - skips the 5 steps of back substitution
-- must follow the shape T(n) = aT(n/b) + f(n)
+- must follow the shape T(n) = aT(n/b) + Θ(nᵈ)
   - i.e. only divide and conquer, not decrease and conquer (which would call T(n-b))
 - ![the Master Theorem](image-9.png)
   - if we only know O() for f, then everything is O. same for Ω().
@@ -915,4 +915,112 @@ def lexpermute(s):
     - using findMin/findMax
   - always O(tree height)
 - having all of these operations being O(n) (since worst base BST is unbalanced and tree height = n-1 ∈ O(n)) is not fast enough. 
+- we will balance the tree to make these operations O(logn)
 
+## Advanced BST Operations
+- check if tree is a BST
+  - we could inorder traverse it and check if the list is strictly increasing, but it takes too long
+  - we will take a node and an interval and check if all of the nodes in its subtrees are in that interval (exclusive of bounds since we have no duplicates)
+  - is_bst(Node node, int min, int max)
+    1. if min not given, min = -∞
+    2. if max not given, max = ∞
+    3. if node.data <= min OR node.data >= max, return False
+    4. return is_bst(node.left, min, node.left.data) AND is_bst(node.right, node.data, max)
+- compute the lowest common ancestor of 2 nodes
+  - lowest_common_ancestor(Node p, Node q)
+    1. if p or q == nullptr, return nullptr
+    2. if p == q, return p [or q. they're the same.]
+    3. if (p.depth > q.depth) return lowest_common_ancestor(p.parent, q)
+    4. if (p.depth < q.depth) return lowest_common_ancestor(p, q.parent)
+    5. return lowest_common_ancestor(p.parent, q.parent)
+  - moves up from p and q until it's at the same depth, then it moves up until they converge
+  - interestingly we are doing recursion to go upward, which is the opposite of what we're supposed to do
+  - which means this could just be a for loop if we wanted/needed to
+- find max width
+  - i.e. amount of nodes at a given depth
+  - we will use breadth-first search to do this in O(n)
+  - we add all of the children of one depth level to a queue, then the size of the queue is the width of the next-deepest level
+  - there's no good pseudocode for this
+  ```c++
+  int max_width(Node *node) {
+	if(node == nullptr) {
+		return 0;
+	}
+	int max_width = 0;
+	queue<Node*> q;
+	q.push(node);
+
+	// Every time around the while loop, the queue contains all the nodes
+	// at the current depth, starting from the depth of the root.
+	while(!q.empty()) {
+		int width = q.size(); // width of current level
+		max_width = max(max_width, width);
+		// Remove from the queue all the nodes from the current level and add
+		// all their children (if any) to get all the nodes for the next level.
+		for(int i = 0; i < width; i++) {
+			Node *current = q.front();
+			q.pop();
+			if(current->left != nullptr) {
+				q.push(current->left);
+			}
+			if(current->right != nullptr) {
+				q.push(current->right);
+			}
+		}
+	}
+	return max_width;
+  }
+  ```
+- find successor
+  - i.e. the next-biggest number in the tree after some given value
+  - simplest: do inorder traversal and get (index of given value) + 1
+    - takes too much memory
+  - better: find leftmost child of given value's right subtree; if no right subtree, keep looking at parents until the first node greater than the given value
+  - find
+    1. if (node == nullptr) return nullptr
+    2. if (node.right != nullptr) return find_min(node.right)
+    3. Node parent = node.parent
+    - // making sure that node == parent.right makes sure that we are never passing a possible successor. we have reached the successor when node is parent's left child
+    1. while(parent != nullptr && node == parent->right)
+		  1. node = parent;
+  		2. parent = node.parent;
+    2. return parent
+
+
+# Test 2 Review
+- adjacency matrix: vertical = source vertex; horizontal = destination vertex
+- when doing topological sort check if there is a cycle; if there is there's no solution
+  - queue new vertices in increasing order
+- recall binary reflected grey codes:
+```py
+  def BRGC(n):
+    if n == 1:
+        return ["0", "1"]
+    L1 = BRGC(n - 1)
+    # Copy with step of -1, so reverse:
+    L2 = L1[::-1] # notice we are *reflecting* the list
+    # List comprehensions:
+    L3 = ["0" + code for code in L1] # adds 0 to the start of every element of L1
+    L4 = ["1" + code for code in L2] # adds 1 to the start of every element of L2
+    return L3 + L4 # appending L3, L4
+```
+- russian peasant multiplication:
+  1. runs faster if n < m, so swap if necessary
+  2. until n = 1:
+     1. divide n by 2 (i.e. right-shift by 1)
+     2. multiply m by 2 (i.e. left-shift by 1)
+  3. for all values of n that are even, remove its corresponding value of m
+  4. sum the remaining values of m
+- when dealing with recursive relations we will always assume that n > 1
+- recall the master theorem: given `T(n) = aT(n/b) + Θ(nᵈ)`, 
+  ![the Master Theorem](image-9.png)
+- radix sort does a stable counting sort (preserves the order of seemingly equal elements) on each digit of a list of numbers and always ends with a sorted array
+- quicksort: best/average cse is Θ(nlgn), worst case is Θ(n²) but it's rare with good pivot selection
+- mergesort: always Θ(nlgn) but needs a lot of memory
+- radix sort: always Θ(n*log₁₀(max element))
+- counting sort: Θ(n+ (max element))
+- BFS/DFS/topological sort: Θ(V²) with adjacency matrix; Θ(V+E) with adj. list
+- Russian Peasant Multiplication: Θ(lg(min(n,m)))
+- lomuto partition:
+  - we will use the first element as the pivot
+- 
