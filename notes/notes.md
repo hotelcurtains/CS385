@@ -1023,4 +1023,57 @@ def lexpermute(s):
 - Russian Peasant Multiplication: Θ(lg(min(n,m)))
 - lomuto partition:
   - we will use the first element as the pivot
-- 
+
+# Red-Black Trees
+- the height o the tree is always O(lgn)
+1. every node is either red or black
+2. the root is black
+3. null pointers are effectively black
+4. if a node is red than all its children are black
+   1. black's children can be any color
+5. all simple paths from node to its descendant must have the same amount of red and black nodes
+- left and right subtree have the same height ± 1
+- insertion
+  - insert like normal
+  - repaint some colors
+  - rotate if necessary
+  - ![left/right rotation diagram](image-12.png)
+    - preserves BST properties
+  - assume that the new node is red
+    - if we are inserting into an empty node, the root will be red (illegal)
+    - so we need to rebalance immediately
+- if property 4 is violated there are 6 cases
+  - we'll only list 3 because of left-right symmetry
+  - we know z is red and z's parent is red
+  - assuming we are starting with a legal tree
+  - z's grandparent exists and is black
+    - it cannot be null cuz then the parent node is the root and it's red, which is illegal
+    - it cannot be red cuz then z's parent and its grandparent are both red, which is also illegal
+    - so fix this we do:
+    ```
+    while z.p.color == RED
+      if z.p == z.p.p.left            // If z's parent is a left child
+          y = z.p.p.right             // then z's uncle y is the right child
+          if y.color == RED
+              z.p.color = BLACK       // case 1
+              y.color = BLACK         // case 1
+              z.p.p.color = RED       // case 1
+              z = z.p.p               // case 1
+    ```
+    ![RBT violation case 1](image-13.png)
+    - keep in mind null pointers count as black
+  -  z's uncle y is black and z is a *right* child
+      ```
+      if z == z.p.right
+        z = z.p             // case 2
+        LEFT-ROTATE(T, z)   // case 2
+      ```
+  - z's uncle y is black and z is a *left* child
+      ```
+      z.p.color = BLACK       // case 3
+      z.p.p.color = RED       // case 3
+      RIGHT-ROTATE(T, z.p.p)  // case 3
+      ```
+  - ![RBT violation case 2/3 diagram](image-14.png)
+- black height = max amount of black nodes in any path from a given node
+  - excluding the given node, including null pointers
