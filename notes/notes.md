@@ -1077,3 +1077,46 @@ def lexpermute(s):
   - ![RBT violation case 2/3 diagram](image-14.png)
 - black height = max amount of black nodes in any path from a given node
   - excluding the given node, including null pointers
+
+## Height of a Red-Black Tree
+- for a black node
+  - its red child has the same black height
+  - its black child has the parent's black height - 1
+  - i.e. its children have a lower bound of bh(parent) - 1
+- for n nodes and root x, n ≥ 2^bh(x) - 1
+- BST height = Ω(lgn)
+- height of a RBT is Θ(lgn)
+  - means they are always balanced
+  - all those tree operations become Θ(lgn) now
+- in the worst case, a RBT's left/right subtrees can be within a factor of 2
+  - as opposed to AVL trees which will only ever have left/right subtree heights with difference of 1
+  - because AVL trees are more strict, doing a lot of insert/delete will make it slower than an RBT
+
+# 2-3 Tree
+- nodes can have 2 or 3 keys
+  - 2-nodes have 1 key and 2 children, 3-nodes have 2 keys and 3 children
+- from construction, the nodes will always be perfectly balanced
+- insertion:
+  - works like a BST except:
+  - ![alt text](image-15.png)
+  - note that promotion may require more splits among the parent's ancestors.
+  - ![alt text](image-16.png)
+- flat trees with quick search
+  
+# Transform and Conquer
+- having a problem that is too difficult/slow to solve, transform it, solve that, and transform it back
+- horner's method: evaluate polynomials efficiently for some x
+  - too slow to do a ton of multiplications for every term
+  - factorize out all xs and slowly add all the coefficients
+  - this leaves us with n multiplications ⇛ Θ(n) rather than Θ(n²)
+- for horner's code, we store the polynomial as an array of its coefficients P
+  - with P[0] at the least degree of x and P[n-1] at the most
+```
+Horner(P[0..n], x):
+  p = P[n]              // p = aₙ
+  for i = n-1 downto 0:
+    p = P[i] + x * p    // p = aᵢ + x * p
+  return p
+```
+- equivalent to using synthetic division with some magic monomial
+
