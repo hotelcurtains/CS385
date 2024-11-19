@@ -1120,3 +1120,75 @@ Horner(P[0..n], x):
 ```
 - equivalent to using synthetic division with some magic monomial
 
+# Binary Exponentiation
+- used to calculate aⁿ
+- uses the binary representation of n to calculate quicker than Θ(n) linear time
+```
+LeftRightBinaryExponentiation(a, b(n))
+//Computes aⁿ by the left-to-right binary exponentiation algorithm
+//Input: A number a and a list b(n) of binary digits bᵢ, ... , b0
+//       in the binary expansion of a positive integer n
+//Output: The value of aⁿ
+product ← a
+for i ← I − 1 downto 0 do
+  product ← product ∗ product
+  if b i = 1 product ← product ∗ a
+return product
+```   
+- example of binary exponentiation
+![6.5 example 2](image-17.png)
+
+# Dynamic Programming
+- the problem must be able to split into subproblems, and the subproblems must be *overlapping*
+- has nothing to do with our computer programming; the name comes from planning
+- e.g. fibonacci takes exponential time
+  - memoization makes it faster but more complicated
+- instead of doing recursion top-down, we will do it bottom-up
+  - i.e. ro recursion; all iteration
+  - which makes this linear time
+  - once we understand how the recursion works top-down, we can turn it into bottom-up iteration
+  - top-down is bad because you might end up calculation the same thing multiple times
+  
+## Coin-row Problem
+- Given n coins with values c₁, c₂, ..., cₙ (which can be any positive
+numbers in any order) we want to pick up the maximum amount of money
+subject to the constraint that no two adjacent coins can be picked up (in
+other words, if we pick up cᵢ then we are not allowed to pick up cᵢ₋₁ and
+vice versa)
+- F(n) = max amount of money
+- base cases:
+  - F(0) = 0
+  - F(1) = c₁
+- recurrence relation of F:
+  - start at the last coin. either you pick it up or you don't.
+  - if we do, F(n) = cₙ + F(n - 2)
+  - if we don't, F(n) = F(n - 1)
+  - which means that F(n) = max(cₙ + F(n - 2), F(n - 1)) for n > 1
+    - n > 1 because there's no coin at i=0 and we can't check n-2 when n=1.
+- F(i) will be our running total
+- we keep track of S(i), which holds the index of the last coin we picked up
+- after a hypothetical run-through, we have this:
+```
+index i |  0  1  2  3  4  5  6
+     cᵢ │     5  1  2 10  6  2
+────────┼─────────────────────
+   F(i) │  0  5  5  7 15 15 17
+   S(i) │  0  0  1  1  2  4  4
+```
+- we can backtrack using F and S.
+- our running time becomes linear
+- it does however take Θ(n) extra space
+  - though this is the same amount as if you used memoization
+  - and the same amount that the extra fx calls would take if you use only recursion
+
+## Coin Collection Problem
+- start with a grid on which there are coins
+- you start in upper-left cell, terminate in bottom-right cell
+- you can only move right or down; not left or up
+- you want to collect as many coins in the grid as possible
+- base case: if you must have come from (i, j) where i or j = 0 because i, j start at 1
+- decide you *came from* the best cell possible
+- store another table of the best-case total getting to each point
+- to backtrack, start at bottom right and move to whichever square is ≤ the current space's total
+  - there can be multiple answers, you can just choose to always go up and not left or vice-versa
+![coin collection example](image-18.png)
