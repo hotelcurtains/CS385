@@ -1192,3 +1192,53 @@ index i |  0  1  2  3  4  5  6
 - to backtrack, start at bottom right and move to whichever square is ≤ the current space's total
   - there can be multiple answers, you can just choose to always go up and not left or vice-versa
 ![coin collection example](image-18.png)
+- run time
+  - n * m (rows * columns) + Θ(1) backtracking
+
+## Candies
+- Alice is a kindergarten teacher. She wants to give some candies to the children in her class.  All the children sit in a line and each of them has a rating score according to his or her performance in the class.  Alice wants to give at least 1 candy to each child. If two children sit next to each other, then the one with the higher rating must get more candies. Alice wants to minimize the total number of candies she must buy.
+- So given the performance P(i) of child i, we want to compute a number of
+candies C(i) for child i such that:
+1) C(i) ≥ 1
+2) If P(i) > P(i-1) then C(i) > C(i-1)
+3) If P(i) > P(i+1) then C(i) > C(i+1)
+4) Σᵢ C(i) is minimum.
+- case 1: child i-1 ≥ child i ≤ child i+1
+  - child i is a valley. they get 1 candy.
+- case 2: child i-1 < child i ≤ child i+1
+  - child i is rising. they get one more candy than the last child.
+- case 3: child i-1 ≥ child i > child i+1
+  - child i is falling. they get one more candy than the next child.
+- case 4: child i-1 < child i > child i+1
+  - child i is a peak. they get 1 more than max(next child, last child).
+- we will also pretend child 0 and child n+1 are worth infinity so the cases work at 1, n.
+  - inexplicably we are starting at index 1 again
+- initialize all children to 1
+- we can combine cases 3 & 4 by doing a backward loop
+  
+## Maximum Path Sum
+- you are given numbers in a triangle and you need to find the path down (like on a tree) with the maximum sum
+  - e.g.
+  ```
+          3
+        7   4
+      2   4   6
+    8   5   9   3
+  ```
+  - best path is is 3 7 4 9, with a sum of 23.
+- top-down linear algorithm is to fill in the pyramid with the sum of its max parent
+- we backtrack the new pyramid bottom-up
+
+## 0-1 Knapsack Problem
+- Given a knapsack of weight capacity W and n items of positive weights
+w₁, ..., wₙ and positive values v₁, ..., vₙ, we want to find the most
+valuable subset of the items that fits into the knapsack.  Each item i is
+either selected or not in the solution (you cannot take half of an item)
+hence the "0-1" part of the problem's name.
+- Let's call j the current remaining weight capacity of the knapsack.  In
+other words, j is W minus the weight of all the items already in the
+knapsack.  We then have 0 ≤ j ≤ W.
+- this is very much like the coin-row problem but with an extra dimension, weight
+- if we do this recursively, we have the following for item i and remaining allowed weight j:
+  - F(i, j) = max(vᵢ + F(i - 1, j - wᵢ), F(i - 1, j)) if wᵢ ≤ j ≤ W.
+  - F(i, j) = F(i - 1, j) if 0 ≤ j < wᵢ.
