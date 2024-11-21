@@ -93,17 +93,23 @@ public:
         // TODO
         while (x != nullptr) {
             y = x;
-            if (*(key) < x->key) {
+            if (key < x->key()) {
                 x = x->left;
-            } else {
+            } /*if (key == x->key()){
+                stringstream iss;
+                iss << key;
+                string key = iss.str();
+                throw tree_exception("Attempt to insert duplicate key '" + key + "'.");
+            }*/
+            else {
                 x = x->right;
             }
         }
         Node<K,V> *z = new Node<K,V>(key, value);
-        z.parent = y;
+        z->parent = y;
         if (y == nullptr) {
-            x->root = z;
-        } else if (z->key < y->key) {
+            root_ = z;
+        } else if (z->key() < y->key()) {
                 y->left = z;
         } else {
                 y->right = z;
@@ -111,7 +117,7 @@ public:
         z->left = nullptr;
         z->right = nullptr;
         z->color = RED;
-        insert_fixup(z);
+        //insert_fixup(z);
     }
 
     /**
@@ -250,15 +256,15 @@ private:
      */
     void insert_fixup(Node<K, V> *z) {
         // TODO
-
+        Node<K, V>* y = z->parent->parent->right;
         while (z->parent->color == RED) {
             if (z->parent == z->parent->parent->left) {
-                Node<K, V>* y = z->parent->parent->right;
+                
 
                 if (y->color == RED) {
                     z->parent->color = BLACK;
                     y->color = BLACK;
-                    z->parent->parent.color = RED;
+                    z->parent->parent->color = RED;
                     z = z->parent->parent;
                 } else {
                     if (z == z->parent->right) {
@@ -266,7 +272,7 @@ private:
                         left_rotate(z);
                     }
                     z->parent->color = BLACK;
-                    z->parent->parent.color = RED;
+                    z->parent->parent->color = RED;
                     right_rotate(z->parent->parent);
 
                 }
@@ -274,7 +280,7 @@ private:
                 if (y->color == RED) {
                     z->parent->color = BLACK;
                     y->color = BLACK;
-                    z->parent->parent.color = RED;
+                    z->parent->parent->color = RED;
                     z = z->parent->parent;
                 } else {
                     if (z == z->parent->left) {
@@ -282,7 +288,7 @@ private:
                         right_rotate(z);
                     }
                     z->parent->color = BLACK;
-                    z->parent->parent.color = RED;
+                    z->parent->parent->color = RED;
                     left_rotate(z->parent->parent);
 
                 }
@@ -300,15 +306,15 @@ private:
         Node<K, V> *y = x->right;       //set y
         x->right = x->left;             // turn y's left subtree into x's right subtree
         if (y->left != nullptr)
-            y->left.parent = x;
-        y.parent = x.parent;            // link x's parent to y
-        if (x.parent == nullptr)
+            y->left->parent = x;
+        y->parent = x->parent;            // link x's parent to y
+        if (x->parent == nullptr)
             root_ = y; 
-        else if (x == x->parent.left)
-            x->parent.left = y;
-        else x->parent.right = y;
-        y.left = x;                     // put x on y's left
-        x.parent = y;
+        else if (x == x->parent->left)
+            x->parent->left = y;
+        else x->parent->right = y;
+        y->left = x;                     // put x on y's left
+        x->parent = y;
     }
 
     /**
@@ -319,15 +325,15 @@ private:
         Node<K, V> *y = x->left;
         x->left = x->right;
         if (y->right != nullptr)
-            y->right.parent = x;
-        y.parent = x.parent;
-        if (x.parent == nullptr)
+            y->right->parent = x;
+        y->parent = x->parent;
+        if (x->parent == nullptr)
             root_ = y; 
-        else if (x == x->parent.right)
-            x->parent.right = y;
-        else x->parent.left = y;
-        y.right = x;
-        x.parent = y;
+        else if (x == (x->parent->right))
+            x->parent->right = y;
+        else x->parent->left = y;
+        y->right = x;
+        x->parent = y;
     }
 
     /**
@@ -337,7 +343,7 @@ private:
     int height(Node<K, V> *node) const {
         // TODO
         if (node == nullptr) return -1;
-        return max(height(node->left) + 1, height(node->right) + 1)
+        return max(height(node->left) + 1, height(node->right) + 1);
     }
 
     /**
@@ -348,7 +354,7 @@ private:
         // TODO
         if (node == nullptr) return 0;
         if (node->left == nullptr && node->right == nullptr) return 1;
-        return (leaf_count(node->left) + leaf_count(node->right))
+        return (leaf_count(node->left) + leaf_count(node->right));
     }
 
     /**
@@ -413,7 +419,7 @@ private:
     size_t sum_levels(Node<K, V> *node, size_t level) const {
         // TODO
         if (node == nullptr) return 0;
-        return level + sum_levels(left->left, level + 1) + sum_levels(left->right, level + 1);
+        return level + sum_levels(node->left, level + 1) + sum_levels(node->right, level + 1);
     }
 
     size_t sum_null_levels() const {
@@ -435,7 +441,7 @@ private:
      */
     size_t sum_null_levels(Node<K, V> *node, size_t level) const {
         if (node == nullptr) return level;
-        return sum_null_levels(left->left, level + 1) + sum_null_levels(left->right, level + 1);
+        return sum_null_levels(node->left, level + 1) + sum_null_levels(node->right, level + 1);
     }
 };
 
