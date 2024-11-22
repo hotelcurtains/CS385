@@ -90,18 +90,18 @@ public:
      */
     void insert(const K &key, const V &value) {
         Node<K, V> *x = root_, *y = nullptr;
-        // TODO
+        size_++;
+        if(find(key) != nullptr){
+            size_--;
+            stringstream iss;
+            iss << "Attempt to insert duplicate key '" << key << "'.";
+            throw tree_exception(iss.str());
+        }
         while (x != nullptr) {
             y = x;
             if (key < x->key()) {
                 x = x->left;
-            } /*if (key == x->key()){
-                stringstream iss;
-                iss << key;
-                string key = iss.str();
-                throw tree_exception("Attempt to insert duplicate key '" + key + "'.");
-            }*/
-            else {
+            } else {
                 x = x->right;
             }
         }
@@ -110,14 +110,14 @@ public:
         if (y == nullptr) {
             root_ = z;
         } else if (z->key() < y->key()) {
-                y->left = z;
+            y->left = z;
         } else {
-                y->right = z;
+            y->right = z;
         }
         z->left = nullptr;
         z->right = nullptr;
         z->color = RED;
-        //insert_fixup(z);
+        insert_fixup(z);
     }
 
     /**
@@ -243,7 +243,7 @@ private:
      * Deletes all nodes from the red-black tree.
      */
     void delete_tree(Node<K, V> *n) {
-        // TODO
+        
         if (n != nullptr) {
             delete_tree(n->left);
             delete_tree(n->right);
@@ -255,42 +255,44 @@ private:
      * Fixup method described on p. 316 of CLRS.
      */
     void insert_fixup(Node<K, V> *z) {
-        // TODO
-        Node<K, V>* y = z->parent->parent->right;
-        while (z->parent->color == RED) {
+        
+        Node<K, V>* y;
+        while (z->parent != nullptr && z->parent->color == RED) {
             if (z->parent == z->parent->parent->left) {
-                
-
-                if (y->color == RED) {
-                    z->parent->color = BLACK;
+                y = z->parent->parent->right;
+                if (y != nullptr && y->color == RED) {
+                    z->parent->color = BLACK;           // case 1 ...
                     y->color = BLACK;
                     z->parent->parent->color = RED;
                     z = z->parent->parent;
                 } else {
-                    if (z == z->parent->right) {
-                        z = z->parent;
+                    if (z == z->parent->right) {        // case 2 ...
+                        z = z->parent;               
                         left_rotate(z);
                     }
-                    z->parent->color = BLACK;
-                    z->parent->parent->color = RED;
-                    right_rotate(z->parent->parent);
-
+                    z->parent->color = BLACK;           // case 3 ...
+                    if(z->parent->parent !=nullptr)  {
+                        z->parent->parent->color = RED;
+                        right_rotate(z->parent->parent);
+                    }
                 }
             } else {
-                if (y->color == RED) {
-                    z->parent->color = BLACK;
+                y = z->parent->parent->left;
+                if (y != nullptr && y->color == RED) {
+                    z->parent->color = BLACK;           // case 1 reflected ...
                     y->color = BLACK;
                     z->parent->parent->color = RED;
                     z = z->parent->parent;
                 } else {
-                    if (z == z->parent->left) {
+                    if (z == z->parent->left) {         // case 2 reflected ...
                         z = z->parent;
                         right_rotate(z);
                     }
-                    z->parent->color = BLACK;
-                    z->parent->parent->color = RED;
-                    left_rotate(z->parent->parent);
-
+                    z->parent->color = BLACK;           // case 3 reflected ...
+                    if(z->parent->parent != nullptr){
+                        z->parent->parent->color = RED;
+                        left_rotate(z->parent->parent);
+                    }
                 }
             }
         }
@@ -302,18 +304,18 @@ private:
      * Left-rotate method described on p. 313 of CLRS.
      */
     void left_rotate(Node<K, V> *x) {
-        // TODO
-        Node<K, V> *y = x->right;       //set y
-        x->right = x->left;             // turn y's left subtree into x's right subtree
+        
+        Node<K, V> *y = x->right;           //set y
+        x->right = y->left;                 // turn y's left subtree into x's right subtree
         if (y->left != nullptr)
             y->left->parent = x;
-        y->parent = x->parent;            // link x's parent to y
+        y->parent = x->parent;              // link x's parent to y
         if (x->parent == nullptr)
             root_ = y; 
         else if (x == x->parent->left)
             x->parent->left = y;
         else x->parent->right = y;
-        y->left = x;                     // put x on y's left
+        y->left = x;                        // put x on y's left
         x->parent = y;
     }
 
@@ -321,15 +323,16 @@ private:
      * Right-rotate method described on p. 313 of CLRS.
      */
     void right_rotate(Node<K, V> *x) {
-        // TODO
+        
         Node<K, V> *y = x->left;
-        x->left = x->right;
+
+        x->left = y->right;
         if (y->right != nullptr)
             y->right->parent = x;
         y->parent = x->parent;
         if (x->parent == nullptr)
             root_ = y; 
-        else if (x == (x->parent->right))
+        else if (x == x->parent->right)
             x->parent->right = y;
         else x->parent->left = y;
         y->right = x;
@@ -341,7 +344,7 @@ private:
      * A null node starts at height -1.
      */
     int height(Node<K, V> *node) const {
-        // TODO
+        
         if (node == nullptr) return -1;
         return max(height(node->left) + 1, height(node->right) + 1);
     }
@@ -351,7 +354,7 @@ private:
      * For this method, a leaf is a non-null node that has no children.
      */
     size_t leaf_count(Node<K, V> *node) const {
-        // TODO
+        
         if (node == nullptr) return 0;
         if (node->left == nullptr && node->right == nullptr) return 1;
         return (leaf_count(node->left) + leaf_count(node->right));
@@ -363,18 +366,18 @@ private:
      * An internal node has at least one child.
      */
     size_t internal_node_count(Node<K, V> *node) const {
-        // TODO
+        
         if (node == nullptr || (node->left == nullptr && node->right == nullptr)) return 0;
-        return (internal_node_count(node->left) + internal_node_count(node->right));
+        return (internal_node_count(node->left) + internal_node_count(node->right) + 1);
     }
 
     /**
      * Helper method to assist in the computation of tree diameter.
      */
     size_t diameter(Node<K, V> *node) const {
-        // TODO
+        
         if (node == nullptr) return 0;
-        return height(node->left) + height(node->right);
+        return max(height(node->left) + height(node->right) + 2, (int)max(diameter(node->left), diameter(node->right)));
     }
 
     /**
@@ -382,7 +385,7 @@ private:
      * Width is defined as the number of nodes residing at a level.
      */
     size_t width(Node<K, V> *node, size_t level) const {
-        // TODO
+        
         if (node == nullptr) return 0;
         if (level == 0) return 1;
         return width(node->left, level - 1) + width(node->right, level - 1);
@@ -417,7 +420,7 @@ private:
      * has sum 1*0 + 2*1 + 1*2 = 4.
      */
     size_t sum_levels(Node<K, V> *node, size_t level) const {
-        // TODO
+        
         if (node == nullptr) return 0;
         return level + sum_levels(node->left, level + 1) + sum_levels(node->right, level + 1);
     }
