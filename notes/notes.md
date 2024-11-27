@@ -1240,5 +1240,47 @@ other words, j is W minus the weight of all the items already in the
 knapsack.  We then have 0 ≤ j ≤ W.
 - this is very much like the coin-row problem but with an extra dimension, weight
 - if we do this recursively, we have the following for item i and remaining allowed weight j:
-  - F(i, j) = max(vᵢ + F(i - 1, j - wᵢ), F(i - 1, j)) if wᵢ ≤ j ≤ W.
-  - F(i, j) = F(i - 1, j) if 0 ≤ j < wᵢ.
+  - F(i, j) = max(vᵢ + F(i - 1, j - wᵢ), F(i - 1, j)) if wᵢ ≤ j ≤ W
+    - vᵢ + F(i - 1, j - wᵢ): you pick up item i. remove its weight wᵢ from remaining weight j
+    - F(i - 1, j): you don't pick up item i and move on.
+    - if wᵢ ≤ j ≤ W: if we run out of remaining weight, we shouldn't bother trying this case anymore.
+  - F(i, j) = F(i - 1, j) if 0 ≤ j < wᵢ
+    - if 0 ≤ j < wᵢ: if remaining weight j is less than the item's weight wᵢ, we don't even need to bother with this case. we move on to the next item.
+
+### Knapsacking Dynamically
+- make a table with 1 row i per item and an amount of columns j equal to the greatest weight
+- fill in row 0 and column 0 with 0s
+- fill in row-major order using the previous algorithm:
+  - F(i, j) = max(vᵢ + F(i - 1, j - wᵢ), F(i - 1, j)) if wᵢ ≤ j ≤ W
+  - F(i, j) = F(i - 1, j) if 0 ≤ j < wᵢ
+  - instead of recursing, we can just check the table for the necessary value of F.
+- when backtracking, check the number above. if the current value and the one above it are the same, then that item was not taken.
+  - either it was too heavy or not valuable enough
+  - if it was taken, then move up one row and left an amount of spaces equal to that item's weight
+  - otherwise, move one row up.
+- space and time complexity for filling in the table are both Θ(n*W)
+- backtracking worst case is Θ(n) ⇛ O(n)
+
+### Knapsacking Wrongly
+- let's try this the bad way
+- we calculate the value/weight ratio for each item, e.g.
+```
+    i │  1    2    3
+──────┼──────────────
+   wᵢ │  4    1    3
+   vᵢ │  8   2.1  0.3
+──────┼──────────────
+vᵢ/wᵢ │  2   2.1  0.1
+```
+- we start at v = 0, j = 4
+- item 2 has the best ratio, so we add it first. v = 2.1, j = 3
+- item 1 is second-best, but we can't fit it.
+- item 3 is third-best, so we try it third. v = 2.4, j = 0
+- if we had done the algorithm proper, we would have added item 1 only, and gotten v = 8, j = 0, which is better than this strategy gave us.
+
+# Warshall Floyd
+- Warshall is about as good asymptotically as using BFS/DFS, but it is better by a constant factor
+  - only better because the code is simpler
+  - better when the graph is dense
+  - for sparse graphs, use BFS/DFS
+- 
