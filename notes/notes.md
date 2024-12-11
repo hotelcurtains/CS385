@@ -1226,7 +1226,7 @@ candies C(i) for child i such that:
     8   5   9   3
   ```
   - best path is is 3 7 4 9, with a sum of 23.
-- top-down linear algorithm is to fill in the pyramid with the sum of its max parent
+- top-down linear algorithm is to fill in the pyramid with the sum of its max parents
 - we backtrack the new pyramid bottom-up
 
 ## 0-1 Knapsack Problem
@@ -1283,4 +1283,167 @@ vᵢ/wᵢ │  2   2.1  0.1
   - only better because the code is simpler
   - better when the graph is dense
   - for sparse graphs, use BFS/DFS
-- 
+
+
+# Greedy Algorithms
+- make the best choice at each step and assume your result is the best output
+  - doesn't always work but sometimes it does
+
+## Prim's Algorithm
+![figure 9.2, some graph and its spanning trees](image-19.png)
+- find minimum spanning tree
+  - you have a connected graph where each edge has a weight (i.e. distance)
+  - a spanning tree has SOME path on which all nodes can be reached
+  - you want to visit all nodes by edges with a minimum total weight
+- doesn't matter which node you start at
+  - we will start at the lowest-numbered vertex
+- ![Prim's Algorithm pseudocode](image-20.png)
+- there can be no cycles
+  - having a cycle means you have a redundant edge
+- we will also force edges to be written in alphabetical order
+  - makes no difference since this graph is undirected, except it makes grading easier
+- like dijkstra, except we only look at the distance from each vertex to its closest connected vertex (i.e. its least heavy edge).
+- finds a minimum spanning tree, O(V²) with adjacency matrix or O(ElgV) with adj. list
+```
+chosen edges:    | remaining vertices:
+a(-, -)          | shortest edges connecting all unvisited nodes to any visited node
+next-shortest:   | (if unreachable from source, weight = ∞)
+x(parent, weight)| 
+```
+
+## kruskal
+- O(ElgE)
+- sort edges by weight then by node letters
+- include edges by increasing weight UNLESS they form a cycle
+- find(n) tells you the furthest node from n
+  - if find(x) = find(y) then don't link
+
+## floyd-warshall
+- finds shortest path between ALL vertices in O(V³)
+- add all given weights to D0 (diagonal is all 0s)
+  - vertical is "from", horizontal is "to"
+- while the graph still contains distances of infinity
+  -  for vertices i, j, k in V...
+     - if D[i][j] > D[i][k] + D[k][j] then D[i][j] = D[i][k] + D[k][j]
+     - i.e. if it's better to go from i to j through k, then do so.
+
+## Dijkstra's algorithm
+- like prim, except we look at TOTAL DISTANCE from source to new vertex.
+  - this lets you do path reconstruction immediately, rather than at the end
+- has Θ(|V²|) for weight matrix
+- has Θ(|E|log|V|) for 
+- finds the shortest path from the source to ANY VERTEX
+```
+chosen edges:          | remaining vertices:
+a(-, -)                | shortest distance from source to *all* unvisited nodes
+lighest edge:          | with intermediate = next node on lightest path to root
+x(intermediate, weight)| and weight = the weight of that path
+```
+
+## Huffman
+- variable-length encoding:
+  - like morse
+  - each character can have a different amount of bits
+  - prefix(-free) codes = no codeword is a prefix of another character
+- find frequencies using a big book or something similar
+- we have a five-symbol alphabet [A, B, C, D, _]
+  - they have corresponding frequencies [0.35, 0.1, 0.2, 0.2, 0.15]
+  - order letters by increasing frequency
+    - here [B, _, C, D, A]
+    - for letters with the same freq, order them alphabetically
+  - merge the two least into one node with freq of the sum of its children
+    - B, _ become the children of node with 0.25
+    - smaller becomes left child
+  - two leftmost characters become their own node
+    - C, D, become children of a node with 0.4
+  - A and [B, D] become a node with 0.6
+  - [C, D] = 0.4 and [A, [B, D]] = 0.6 become the root node with freq 1
+- this diagram explains it better than i can type it
+  - ![FIGURE 9.12 Example of constructing a Huffman coding tree.](image-21.png)
+- greedy because we know each step we take is the best possible one
+  - this is optimal
+- to decode just run through the tree, and start over every time you hit a leaf.
+- average number of bits is the weighted average
+  - ∑(∀ letters) (bits in its code * letter's freq)
+- compression ratio ∈ (.2, .8) depending on the characteristics of the data
+- run time Θ(nlgn) to sort the list in making the tree
+  - doesn't matter cuz we usually only do it once ever
+  - encoding is linear and decoding is a slower constant, which is what actually matters
+- if all characters have the same frequency, this becomes fixed-length encoding
+- we can compute the freq of each letter in the FILE instead of coming in with them defined, and making a new tree
+  - the decoder will also need to know this code, since they can't decode it without the tree
+  - at best the compression is under 25%
+- in dynamic huffman encoding, the freq list (and therefore tree) gets updated for each character 
+  - the running freqs will approach their actual freqs quickly
+- Lempel-Ziv - encodes substrings/words rather than individual characters
+
+# Iterative Improvement
+- start with a suboptimal solution and improve it until you can't anymore
+  
+## Maximum Flow
+- given a directed graph with edges who have maximum capacities
+- we will start from a source that has no incoming edges
+- let's say f(u, v) = the flow you are sending into edge (u,v) and c(u,v) is the capacity of that edge
+- value |f| of a flow f = sum of the flow out of the current vertex minus the flow into the current vertex
+### the Ford-Fulkerson method
+```
+FORD-FULKERSON_METHOD(G; s; t)
+  initialize flow f to 0
+  while there exists an augmenting path p in the residual network G_f
+    augment flow f along p
+  return f
+```
+- a method, not an algorithm
+- our starting solution is that all flows are 0
+- augmenting path = a path with non-full forward edges or non-empty backward edges
+- augment = add bottleneck to forward edges and subtract from backward edges
+- bottleneck = smallest amount of capacity of any edge in the path
+- the flow coming in and out of a vertex must be the same
+1. find the best augmenting path, using BST
+2. compute bottleneck capacity
+3. augment each edge and total flow
+- residual capacity c_f(u,v) tells you how much you can move the flow (u,v) up or down
+  - c_f(u,v) = c(u,v) - f(u,v) if (u,v) ∈ E
+  - = f(v,u) if (v,u) ∈ E
+  - =0 otherwise.
+
+
+### Edmonds-Karp Algorithm
+- find the next augmenting path in th network with BFS.
+  - i.e. find the shortest path from source s to destination (e.g. sink) t.
+- running time O(VE²)
+  - can have a really bad running time if you select the path wrong
+  - or it can get really small if you have a massive network
+  - worst possible base if O(E⁵)
+- the first residual network is a copy of the original network
+- then we do BFS from the source to find the shortest path from s to t in the augmented matrix.
+- G_f (residual network) is made of all edges (u, v) where c_f(u, v) > 0
+  - where c_f =
+    - capacity of (u,v) - current flow of (u,v) if (u,v) exists
+      - how much more we can push *into* the real edge
+    - current flow (v,u) if the backward edge (v,u) exists
+      - i.e. how much we can push *out of* the real edge
+    - 0 otherwise.
+- on G_f, any path is an augmenting path (since it includes forwards and backwards edges)
+- the minimum edge on G_f is the residual capacity
+- augment = along augmented path, increase real flow if the real edge is forward, or decrease if it's backward
+- our BST will ignore flow/capacities, just only travelling existing edges
+```
+edmonds-karp(flow network G, source s, sink t)
+initialize all flows to 0
+while there exists a path from s to t:
+    do BST to find shortest path from s to t on residual network
+    augment real path by the bottleneck along BST path
+    update residual network
+```
+
+
+## Max-Flow Min-Cut theorem
+- take a cut of the graph
+  - the source will be on the left and the destination on the right
+- sum the capacity of all the edges that you cut. that is the amount of flow that must be passing the cut
+  - add edges going from left to right, subtract anything going from right to left
+- if we take one cut where all the pipes are at max capacity, that is the minimum cut. the sum of those capacities are the max flow
+- we can increase the maximum flow by increasing the capacities of the flows we cut by the min cut.
+
+
